@@ -1,0 +1,162 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  STAFF
+  CUSTOMER
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model Business {
+  id               String              @id @default(cuid())
+  name             String
+  timezone         String              @default("UTC")
+  emailFrom        String?
+  users            User[]
+  services         Service[]
+  availability     AvailabilityRule[]
+  appointments     Appointment[]
+  notificationLogs NotificationLog[]
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+}
+
+model User {
+  id           String    @id @default(cuid())
+  businessId   String?
+  business     Business? @relation(fields: [businessId], references: [id], onDelete: SetNull)
+  role         UserRole  @default(CUSTOMER)
+  fullName     String
+  email        String    @unique
+  passwordHash String
+  emailVerifiedAt DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  verificationTokens VerificationToken[]
+  resetTokens PasswordResetToken[]
+  authAuditLogs AuthAuditLog[]
+}
+
+enum AuthEventType {
+  REGISTER
+  LOGIN_SUCCESS
+  LOGIN_FAILURE
+  LOGOUT
+  EMAIL_VERIFIED
+  RESEND_VERIFICATION
+  PASSWORD_RESET_REQUEST
+  PASSWORD_RESET_COMPLETE
+}
+
+model AuthAuditLog {
+  id         String        @id @default(cuid())
+  event      AuthEventType
+  userId     String?
+  user       User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  email      String?
+  ip         String?
+  userAgent  String?
+  metadata   Json?
+  createdAt  DateTime      @default(now())
+
+  @@index([userId, createdAt])
+  @@index([email, createdAt])
+  @@index([event, createdAt])
+}
+
+model VerificationToken {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime @default(now())
+
+  @@index([userId, expiresAt])
+}
+
+model PasswordResetToken {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime @default(now())
+
+  @@index([userId, expiresAt])
+}
+
+model Service {
+  id                String        @id @default(cuid())
+  businessId        String
+  business          Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  name              String
+  durationMinutes   Int
+  priceCents        Int           @default(0)
+  isActive          Boolean       @default(true)
+  appointments      Appointment[]
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+}
+
+model AvailabilityRule {
+  id          String   @id @default(cuid())
+  businessId  String
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  dayOfWeek   Int
+  startMinute Int
+  endMinute   Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Appointment {
+  id                     String            @id @default(cuid())
+  businessId             String
+  business               Business          @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  serviceId              String
+  service                Service           @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  customerName           String
+  customerEmail          String
+  startAt                DateTime
+  endAt                  DateTime
+  status                 AppointmentStatus @default(PENDING)
+  reminderSentAt         DateTime?
+  confirmationSentAt     DateTime?
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+
+  @@index([businessId, startAt])
+  @@index([businessId, status])
+}
+
+model NotificationLog {
+  id             String   @id @default(cuid())
+  businessId     String
+  business       Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  appointmentId  String?
+  type           String
+  targetEmail    String
+  success        Boolean
+  providerStatus String?
+  createdAt      DateTime @default(now())
+}
