@@ -17,7 +17,7 @@ export function SiteHeader({ session }: { session: Session | null }) {
     <header
       className={
         isHome
-          ? "sticky top-0 z-50 border-b border-white/15 bg-blue-600/90 text-white backdrop-blur-md"
+          ? "sticky top-0 z-50 border-b border-white/15 bg-teal-800/90 text-white backdrop-blur-md"
           : "border-b border-slate-200 bg-white text-slate-900"
       }
     >
@@ -65,7 +65,7 @@ function NavLink({
       ? "font-semibold text-white"
       : "text-white/90 hover:text-white"
     : active
-      ? "font-semibold text-blue-600"
+      ? "font-semibold text-teal-700"
       : "text-slate-600 hover:text-slate-900";
   return (
     <Link href={href} className={base}>
@@ -99,7 +99,7 @@ function AdminStaffUserMenu({
   const item = isHome
     ? "text-white/95 hover:bg-white/10"
     : "text-slate-700 hover:bg-slate-50";
-  const itemMuted = isHome ? "text-blue-100" : "text-slate-500";
+  const itemMuted = isHome ? "text-teal-100" : "text-slate-500";
   const roleLabel = staffRole === "ADMIN" ? "Administrator" : "Staff";
 
   return (
@@ -120,7 +120,7 @@ function AdminStaffUserMenu({
           <p className={`max-w-[160px] truncate text-xs font-semibold ${isHome ? "text-white" : "text-slate-900"}`}>
             {displayName}
           </p>
-          <p className={`text-[11px] ${isHome ? "text-blue-100" : "text-slate-500"}`}>{roleLabel}</p>
+          <p className={`text-[11px] ${isHome ? "text-teal-100" : "text-slate-500"}`}>{roleLabel}</p>
         </div>
         <ChevronDownIcon
           className={`h-4 w-4 shrink-0 opacity-60 transition group-open:rotate-180 ${isHome ? "text-white" : "text-slate-600"}`}
@@ -172,7 +172,7 @@ function CustomerUserMenu({
   const item = isHome
     ? "text-white/95 hover:bg-white/10"
     : "text-slate-700 hover:bg-slate-50";
-  const itemMuted = isHome ? "text-blue-100" : "text-slate-500";
+  const itemMuted = isHome ? "text-teal-100" : "text-slate-500";
 
   return (
     <details className="group relative mr-1">
@@ -183,7 +183,7 @@ function CustomerUserMenu({
       >
         <span
           className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white ${
-            isHome ? "bg-white/25" : "bg-blue-600"
+            isHome ? "bg-white/25" : "bg-teal-700"
           }`}
         >
           {initial}
@@ -192,7 +192,7 @@ function CustomerUserMenu({
           <p className={`max-w-[140px] truncate text-xs font-semibold ${isHome ? "text-white" : "text-slate-900"}`}>
             {displayName}
           </p>
-          <p className={`text-[11px] ${isHome ? "text-blue-100" : "text-slate-500"}`}>Member</p>
+          <p className={`text-[11px] ${isHome ? "text-teal-100" : "text-slate-500"}`}>Member</p>
         </div>
         <ChevronDownIcon
           className={`h-4 w-4 shrink-0 opacity-60 transition group-open:rotate-180 ${isHome ? "text-white" : "text-slate-600"}`}
@@ -239,8 +239,8 @@ function HeaderAuth({ session, isHome }: { session: Session | null; isHome: bool
           href="/auth/register"
           className={
             isHome
-              ? "rounded-full bg-white px-4 py-2 font-semibold text-blue-600 shadow-sm transition hover:bg-blue-50"
-              : "rounded-full bg-blue-600 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-blue-700"
+              ? "rounded-full bg-white px-4 py-2 font-semibold text-teal-700 shadow-sm transition hover:bg-teal-50"
+              : "rounded-full bg-teal-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-teal-800"
           }
         >
           Get Started

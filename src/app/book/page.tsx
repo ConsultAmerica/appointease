@@ -109,7 +109,7 @@ function BookCalendar({
                 isPast
                   ? "cursor-not-allowed text-slate-300"
                   : isSelected
-                    ? "bg-blue-100 font-semibold text-blue-700 ring-2 ring-blue-200"
+                    ? "bg-teal-100 font-semibold text-teal-800 ring-2 ring-teal-200"
                     : "text-slate-800 hover:bg-slate-100"
               }`}
             >
@@ -125,7 +125,7 @@ function BookCalendar({
 const CARD_PALETTE = [
   "from-violet-500 to-violet-600",
   "from-emerald-500 to-emerald-600",
-  "from-blue-500 to-blue-600",
+  "from-teal-500 to-teal-600",
   "from-rose-500 to-rose-600",
   "from-teal-500 to-teal-600",
   "from-orange-500 to-orange-600",
@@ -415,7 +415,7 @@ export default function BookPage() {
           aria-live="polite"
         >
           <div
-            className="h-10 w-10 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"
+            className="h-10 w-10 animate-spin rounded-full border-2 border-teal-700 border-t-transparent"
             aria-hidden
           />
           <p className="mt-4 text-sm font-medium text-slate-800">Loading services…</p>
@@ -470,7 +470,7 @@ export default function BookPage() {
           {sessionStatus === "authenticated" && session?.user?.role === "CUSTOMER" ? (
             <p className="mt-4 text-sm text-slate-700">
               View this booking under{" "}
-              <Link href="/customer" className="font-semibold text-blue-600 underline hover:text-blue-700">
+              <Link href="/customer" className="font-semibold text-teal-700 underline hover:text-teal-800">
                 My appointments
               </Link>
               .
@@ -478,15 +478,15 @@ export default function BookPage() {
           ) : (
             <p className="mt-4 text-sm leading-relaxed text-slate-700">
               Optional:{" "}
-              <Link href="/auth/register" className="font-semibold text-blue-600 underline hover:text-blue-700">
+              <Link href="/auth/register" className="font-semibold text-teal-700 underline hover:text-teal-800">
                 Register
               </Link>{" "}
               or{" "}
-              <Link href="/auth/login" className="font-semibold text-blue-600 underline hover:text-blue-700">
+              <Link href="/auth/login" className="font-semibold text-teal-700 underline hover:text-teal-800">
                 sign in
               </Link>{" "}
               with the same email to track this and future bookings under{" "}
-              <Link href="/customer" className="font-semibold text-blue-600 underline hover:text-blue-700">
+              <Link href="/customer" className="font-semibold text-teal-700 underline hover:text-teal-800">
                 My appointments
               </Link>
               .
@@ -547,11 +547,11 @@ export default function BookPage() {
                       type="button"
                       onClick={() => setServiceId(service.id)}
                       className={`relative flex flex-col rounded-xl border-2 bg-white p-4 text-left transition-shadow hover:shadow-md ${
-                        selected ? "border-blue-600 ring-2 ring-blue-100" : "border-slate-200"
+                        selected ? "border-teal-700 ring-2 ring-teal-100" : "border-slate-200"
                       }`}
                     >
                       {selected && (
-                        <span className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs text-white">
+                        <span className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full bg-teal-700 text-xs text-white">
                           ✓
                         </span>
                       )}
@@ -634,7 +634,7 @@ export default function BookPage() {
                         onClick={() => setSelectedSlot(slot.iso)}
                         className={`rounded-lg border-2 px-3 py-2.5 text-sm font-medium transition-colors ${
                           selectedSlot === slot.iso
-                            ? "border-blue-600 bg-blue-50 text-blue-900"
+                            ? "border-teal-700 bg-teal-50 text-teal-900"
                             : "border-slate-200 bg-white text-slate-800 hover:border-slate-300"
                         }`}
                       >
@@ -712,7 +712,7 @@ export default function BookPage() {
                 </label>
                 <button
                   type="submit"
-                  className="w-full rounded-lg bg-blue-600 py-3 text-sm font-semibold text-white hover:bg-blue-700 sm:w-auto sm:px-8"
+                  className="w-full rounded-lg bg-teal-700 py-3 text-sm font-semibold text-white hover:bg-teal-800 sm:w-auto sm:px-8"
                 >
                   Submit booking request
                 </button>
@@ -745,7 +745,7 @@ export default function BookPage() {
 
           {sessionStatus === "authenticated" && session?.user?.role === "CUSTOMER" && !bookingSuccess && (
             <p className="mt-6 text-sm text-slate-600">
-              <Link href="/customer" className="font-medium text-blue-700 underline">
+              <Link href="/customer" className="font-medium text-teal-700 underline">
                 My appointments
               </Link>
             </p>
@@ -770,7 +770,7 @@ function StepIndicator({ step }: { step: number }) {
                 <div
                   className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold sm:h-10 sm:w-10 sm:text-sm ${
                     current
-                      ? "bg-blue-600 text-white shadow-md ring-4 ring-blue-100"
+                      ? "bg-teal-700 text-white shadow-md ring-4 ring-teal-100"
                       : done
                         ? "bg-emerald-500 text-white shadow-sm"
                         : "bg-slate-200 text-slate-500"
@@ -778,7 +778,7 @@ function StepIndicator({ step }: { step: number }) {
                 >
                   {done ? "✓" : n}
                 </div>
-                <span className={`mt-1.5 hidden text-[11px] font-medium sm:block sm:text-xs ${current ? "text-blue-800" : "text-slate-500"}`}>
+                <span className={`mt-1.5 hidden text-[11px] font-medium sm:block sm:text-xs ${current ? "text-teal-800" : "text-slate-500"}`}>
                   {label}
                 </span>
               </div>
@@ -827,7 +827,7 @@ function WizardNav({
           type="button"
           onClick={onNext}
           disabled={nextDisabled}
-          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-lg bg-teal-700 px-5 py-2 text-sm font-semibold text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Continue
           <span aria-hidden>→</span>

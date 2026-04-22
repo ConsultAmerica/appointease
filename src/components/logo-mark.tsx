@@ -5,9 +5,9 @@ export function LogoMark({
   className?: string;
   variant?: "default" | "onBlue";
 }) {
-  const bg = variant === "onBlue" ? "fill-white" : "fill-blue-600";
-  const fg = variant === "onBlue" ? "fill-blue-600" : "fill-white";
-  const check = variant === "onBlue" ? "fill-emerald-500" : "fill-emerald-400";
+  const bg = variant === "onBlue" ? "fill-white" : "fill-teal-700";
+  const fg = variant === "onBlue" ? "fill-teal-700" : "fill-white";
+  const check = variant === "onBlue" ? "fill-emerald-600" : "fill-emerald-300";
   return (
     <svg className={className} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
       <rect width="40" height="40" rx="10" className={bg} />

@@ -250,7 +250,7 @@ export default function RegisterPage() {
       )}
       <p className="mt-4 text-sm text-slate-600">
         Already registered?{" "}
-        <a href="/auth/login" className="font-medium text-blue-600 underline">
+        <a href="/auth/login" className="font-medium text-teal-700 underline">
           Sign in
         </a>
       </p>

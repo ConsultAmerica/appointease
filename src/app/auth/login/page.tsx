@@ -92,19 +92,19 @@ export default function LoginPage() {
       )}
       <p className="mt-4 text-sm text-slate-600">
         No account?{" "}
-        <a href="/auth/register" className="font-medium text-blue-600 underline">
+        <a href="/auth/register" className="font-medium text-teal-700 underline">
           Create one
         </a>
       </p>
       <p className="mt-2 text-sm text-slate-600">
         Forgot password?{" "}
-        <a href="/auth/forgot-password" className="font-medium text-blue-600 underline">
+        <a href="/auth/forgot-password" className="font-medium text-teal-700 underline">
           Reset it
         </a>
       </p>
       <p className="mt-2 text-sm text-slate-600">
         Didn&apos;t get the verification email?{" "}
-        <a href="/auth/resend-verification" className="font-medium text-blue-600 underline">
+        <a href="/auth/resend-verification" className="font-medium text-teal-700 underline">
           Resend
         </a>
       </p>

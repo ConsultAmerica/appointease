@@ -202,7 +202,7 @@ export default function AdminPage() {
         <div className="flex shrink-0 flex-wrap gap-2">
           <Link
             href="/book"
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white shadow-md shadow-blue-600/20 transition hover:bg-blue-700"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-teal-700 px-5 text-sm font-semibold text-white shadow-md shadow-teal-700/20 transition hover:bg-teal-800"
           >
             View booking page
           </Link>
@@ -231,13 +231,13 @@ export default function AdminPage() {
       )}
 
       {!loading && firstPendingToday && (
-        <section className="mt-8 rounded-2xl bg-blue-600 p-6 text-white shadow-lg shadow-blue-600/25 md:p-8">
+        <section className="mt-8 rounded-2xl bg-teal-700 p-6 text-white shadow-lg shadow-teal-700/25 md:p-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
-              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-blue-100">Needs your action</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-teal-100">Needs your action</p>
               <h2 className="mt-2 text-xl font-bold md:text-2xl">{firstPendingToday.service.name}</h2>
-              <p className="mt-1 text-sm text-blue-100">{firstPendingToday.customerName}</p>
-              <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-blue-50">
+              <p className="mt-1 text-sm text-teal-100">{firstPendingToday.customerName}</p>
+              <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-teal-50">
                 <span className="inline-flex items-center gap-2">
                   <CalendarMini className="h-4 w-4 opacity-90" />
                   {formatInTimeZone(firstPendingToday.startAt, tz)}
@@ -257,8 +257,8 @@ export default function AdminPage() {
           label="Total bookings"
           value={stats.totalBookings}
           valueClassName="text-slate-900"
-          icon={<CalendarIcon className="h-5 w-5 text-blue-600" />}
-          iconBg="bg-blue-50"
+          icon={<CalendarIcon className="h-5 w-5 text-teal-700" />}
+          iconBg="bg-teal-50"
         />
         <StatCard
           label="Upcoming"
@@ -296,7 +296,7 @@ export default function AdminPage() {
                 <p className="font-medium text-slate-800">No appointments today</p>
                 <p className="mt-2 text-sm text-slate-600">
                   When customers book for today, they will appear here. Share your{" "}
-                  <Link href="/book" className="font-medium text-blue-600 underline hover:text-blue-700">
+                  <Link href="/book" className="font-medium text-teal-700 underline hover:text-teal-800">
                     public booking page
                   </Link>
                   .

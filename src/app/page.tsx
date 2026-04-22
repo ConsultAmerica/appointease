@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <div className="flex flex-col">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-600 to-blue-800 pb-16 pt-4 md:pb-24 md:pt-8">
+      <section className="relative overflow-hidden bg-gradient-to-br from-teal-700 via-teal-700 to-emerald-800 pb-16 pt-4 md:pb-24 md:pt-8">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(255,255,255,0.15),transparent)]" />
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-6 md:grid-cols-2 md:gap-16 lg:py-8">
           <div className="space-y-6">
@@ -22,14 +22,14 @@ export default function Home() {
               Appointment Scheduling,{" "}
               <span className="text-yellow-300">Completely Automated</span>
             </h1>
-            <p className="max-w-xl text-lg text-blue-100">
+            <p className="max-w-xl text-lg text-teal-100">
               Skip the phone calls. Let customers book online, receive instant confirmations, and get automated reminders
               — all on autopilot.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/book"
-                className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-base font-semibold text-blue-600 shadow-lg transition hover:bg-blue-50"
+                className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-base font-semibold text-teal-700 shadow-lg transition hover:bg-teal-50"
               >
                 Book an Appointment
                 <span aria-hidden>→</span>
@@ -41,14 +41,14 @@ export default function Home() {
                 Get Started Free
               </Link>
             </div>
-            <p className="text-sm text-blue-200/90">No credit card required · Setup in minutes</p>
+            <p className="text-sm text-teal-200/90">No credit card required · Setup in minutes</p>
           </div>
 
           <div className="relative mx-auto w-full max-w-md md:max-w-none">
             <div className="rounded-2xl border border-white/20 bg-white/10 p-5 shadow-2xl backdrop-blur-md md:p-6">
               <div className="mb-4 flex items-center justify-between text-sm text-white">
                 <span className="font-semibold">Today&apos;s Schedule</span>
-                <span className="text-blue-100">April 10, 2026</span>
+                <span className="text-teal-100">April 10, 2026</span>
               </div>
               <ul className="space-y-3">
                 {[
@@ -66,9 +66,9 @@ export default function Home() {
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-medium">
-                        {row.name} <span className="text-blue-100">— {row.detail}</span>
+                        {row.name} <span className="text-teal-100">— {row.detail}</span>
                       </p>
-                      <p className="text-xs text-blue-200">{row.time}</p>
+                      <p className="text-xs text-teal-200">{row.time}</p>
                     </div>
                     <span
                       className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -85,7 +85,7 @@ export default function Home() {
             </div>
             <div className="absolute -bottom-2 right-0 z-10 max-w-[240px] rounded-xl border border-slate-200/80 bg-white p-3 shadow-xl md:-right-4 md:bottom-4">
               <div className="flex gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-100 text-teal-700">
                   <BellIcon className="h-5 w-5" />
                 </span>
                 <div>
@@ -108,7 +108,7 @@ export default function Home() {
             { stat: "24/7", label: "Online Booking" },
           ].map((item) => (
             <div key={item.label}>
-              <p className="text-3xl font-bold text-blue-500 md:text-4xl">{item.stat}</p>
+              <p className="text-3xl font-bold text-teal-500 md:text-4xl">{item.stat}</p>
               <p className="mt-1 text-sm text-slate-400">{item.label}</p>
             </div>
           ))}
@@ -119,7 +119,7 @@ export default function Home() {
       <section className="bg-white py-20">
         <div className="mx-auto max-w-6xl px-6">
           <div className="text-center">
-            <span className="inline-block rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
+            <span className="inline-block rounded-full bg-teal-50 px-3 py-1 text-sm font-medium text-teal-700">
               Everything You Need
             </span>
             <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">Built for Modern Businesses</h2>
@@ -130,7 +130,7 @@ export default function Home() {
           </div>
           <div className="mt-14 grid gap-8 md:grid-cols-3">
             <FeatureCard
-              iconWrap="bg-blue-100 text-blue-600"
+              iconWrap="bg-teal-100 text-teal-700"
               icon={<CalendarIcon className="h-6 w-6" />}
               title="Smart Scheduling"
               description="AI-powered slot management that fills idle time and eliminates scheduling conflicts automatically."
@@ -185,7 +185,7 @@ export default function Home() {
             <p className="mt-2 text-slate-600">Book an appointment in under 2 minutes</p>
           </div>
           <div className="relative mt-16">
-            <div className="absolute left-0 right-0 top-8 hidden h-0.5 bg-blue-100 md:block" style={{ marginLeft: "10%", marginRight: "10%" }} />
+            <div className="absolute left-0 right-0 top-8 hidden h-0.5 bg-teal-100 md:block" style={{ marginLeft: "10%", marginRight: "10%" }} />
             <div className="grid gap-10 md:grid-cols-4 md:gap-4">
               {[
                 { n: 1, title: "Choose a Service", desc: "Browse our service catalog and pick what you need.", icon: <SearchIcon className="h-6 w-6" /> },
@@ -194,10 +194,10 @@ export default function Home() {
                 { n: 4, title: "Get Notified", desc: "Receive instant confirmation + automated reminder.", icon: <MailIcon className="h-6 w-6" /> },
               ].map((step) => (
                 <div key={step.n} className="relative flex flex-col items-center text-center">
-                  <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/30">
+                  <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-xl bg-teal-700 text-white shadow-lg shadow-teal-700/30">
                     {step.icon}
                   </div>
-                  <div className="mt-3 flex h-7 w-7 items-center justify-center rounded-full border-2 border-blue-600 bg-white text-xs font-bold text-blue-600">
+                  <div className="mt-3 flex h-7 w-7 items-center justify-center rounded-full border-2 border-teal-700 bg-white text-xs font-bold text-teal-700">
                     {step.n}
                   </div>
                   <h3 className="mt-3 font-semibold text-slate-900">{step.title}</h3>
@@ -246,7 +246,7 @@ export default function Home() {
                 </div>
                 <p className="flex-1 text-sm leading-relaxed text-slate-700">&ldquo;{t.quote}&rdquo;</p>
                 <footer className="mt-6 flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-700 text-sm font-bold text-white">
                     {t.initial}
                   </span>
                   <div>
@@ -261,14 +261,14 @@ export default function Home() {
       </section>
 
       {/* Final CTA */}
-      <section className="bg-blue-600 py-16">
+      <section className="bg-teal-700 py-16">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <h2 className="text-3xl font-bold text-white md:text-4xl">Ready to Automate Your Bookings?</h2>
-          <p className="mt-3 text-lg text-blue-100">Start for free. No credit card required. Set up in minutes.</p>
+          <p className="mt-3 text-lg text-teal-100">Start for free. No credit card required. Set up in minutes.</p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
               href="/book"
-              className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3 text-base font-semibold text-blue-600 shadow-lg hover:bg-blue-50"
+              className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3 text-base font-semibold text-teal-700 shadow-lg hover:bg-teal-50"
             >
               Book an Appointment <span aria-hidden>→</span>
             </Link>

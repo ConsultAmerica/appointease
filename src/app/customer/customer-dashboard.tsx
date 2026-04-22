@@ -96,7 +96,7 @@ export function CustomerDashboard({
         </div>
         <Link
           href="/book"
-          className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white shadow-md shadow-blue-600/20 transition hover:bg-blue-700"
+          className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-teal-700 px-5 text-sm font-semibold text-white shadow-md shadow-teal-700/20 transition hover:bg-teal-800"
         >
           + New Booking
         </Link>
@@ -106,9 +106,9 @@ export function CustomerDashboard({
         <StatCard
           label="Total Bookings"
           value={stats.total}
-          valueClassName="text-blue-600"
-          icon={<CalendarIcon className="h-5 w-5 text-blue-600" />}
-          iconBg="bg-blue-50"
+          valueClassName="text-teal-700"
+          icon={<CalendarIcon className="h-5 w-5 text-teal-700" />}
+          iconBg="bg-teal-50"
         />
         <StatCard
           label="Upcoming"
@@ -134,15 +134,15 @@ export function CustomerDashboard({
       </section>
 
       {hasNoAppointments && (
-        <section className="mt-8 overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 p-6 text-white shadow-lg shadow-blue-600/30 md:p-8">
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-blue-100">Get started</p>
+        <section className="mt-8 overflow-hidden rounded-2xl bg-gradient-to-br from-teal-700 to-emerald-700 p-6 text-white shadow-lg shadow-teal-700/30 md:p-8">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-teal-100">Get started</p>
           <h2 className="mt-2 text-2xl font-bold leading-tight md:text-3xl">Ready to schedule your first appointment</h2>
-          <p className="mt-3 max-w-xl text-sm text-blue-50">
+          <p className="mt-3 max-w-xl text-sm text-teal-50">
             Once you submit a booking request, it will appear here with real-time status updates until confirmed.
           </p>
           <Link
             href="/book"
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-blue-700 shadow-md transition hover:bg-blue-50"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-teal-700 shadow-md transition hover:bg-teal-50"
           >
             + Create booking
           </Link>
@@ -150,12 +150,12 @@ export function CustomerDashboard({
       )}
 
       {!hasNoAppointments && nextAppointment && (
-        <section className="mt-8 rounded-2xl bg-blue-600 p-6 text-white shadow-lg shadow-blue-600/25 md:p-8">
+        <section className="mt-8 rounded-2xl bg-teal-700 p-6 text-white shadow-lg shadow-teal-700/25 md:p-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
-              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-blue-100">Next appointment</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-teal-100">Next appointment</p>
               <h2 className="mt-2 text-2xl font-bold leading-tight md:text-3xl">{nextAppointment.serviceName}</h2>
-              <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-blue-50">
+              <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-teal-50">
                 <span className="inline-flex items-center gap-2">
                   <CalendarMini className="h-4 w-4 shrink-0 opacity-90" />
                   {new Date(nextAppointment.startAt).toLocaleDateString(undefined, {
@@ -207,7 +207,7 @@ export function CustomerDashboard({
           <p className="mt-2 text-sm text-slate-600">Past visits stay under Past — book again anytime.</p>
           <Link
             href="/book"
-            className="mt-4 inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-600/20 hover:bg-blue-700"
+            className="mt-4 inline-flex items-center justify-center rounded-xl bg-teal-700 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-teal-700/20 hover:bg-teal-800"
           >
             + New booking
           </Link>
@@ -231,7 +231,7 @@ export function CustomerDashboard({
               onClick={() => setFilter(key)}
               className={`rounded-xl border px-4 py-1.5 text-sm font-medium transition ${
                 filter === key
-                  ? "border-blue-600 bg-blue-600 text-white shadow-sm"
+                  ? "border-teal-700 bg-teal-700 text-white shadow-sm"
                   : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
               }`}
             >
@@ -254,7 +254,7 @@ export function CustomerDashboard({
               {!hasNoAppointments && (
                 <Link
                   href="/book"
-                  className="mt-5 inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
+                  className="mt-5 inline-flex items-center justify-center rounded-xl bg-teal-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-teal-800"
                 >
                   + Book appointment
                 </Link>
@@ -338,7 +338,7 @@ export function CustomerDashboard({
                       </form>
                     )}
                   </div>
-                  <p className="text-right text-xl font-bold tabular-nums text-blue-600">
+                  <p className="text-right text-xl font-bold tabular-nums text-teal-700">
                     ${(a.priceCents / 100).toFixed(2)}
                   </p>
                 </div>
