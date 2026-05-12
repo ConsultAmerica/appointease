@@ -41,7 +41,8 @@ export function DatabaseAlert() {
     };
   }, []);
 
-  const dbDown = health?.database !== "up";
+  /** `health === null` is still loading — do not treat as down or the amber banner flashes on every navigation. */
+  const dbDown = health !== null && health.database !== "up";
   const chatMode = health?.chatMode ?? "off";
   const showDemoChatHint = health?.database === "up" && chatMode === "demo";
   const isDevelopment = health?.isDevelopment ?? false;
