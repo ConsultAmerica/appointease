@@ -1,5 +1,7 @@
+import type { Session } from "next-auth";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { describeDatabaseLoadFailure } from "@/lib/prisma-errors";
 import { prisma } from "@/lib/prisma";
 import { withTimeout } from "@/lib/with-timeout";
 
@@ -9,9 +11,18 @@ const DB_QUERY_MS = 12_000;
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  let session: Session | null = null;
   try {
-    const session = await auth();
+    session = await auth();
+  } catch (authErr) {
+    console.error("[api/businesses] auth() failed", authErr);
+    return NextResponse.json(
+      { error: "Session check failed. Try refreshing the page or signing in again.", businesses: [] },
+      { status: 500 },
+    );
+  }
 
+  try {
     const businesses = await withTimeout(
       prisma.business.findMany({
         include: {
@@ -62,11 +73,10 @@ export async function GET() {
         { status: 503 },
       );
     }
-    console.error("[api/businesses] Database error — is DATABASE_URL correct and Postgres running?", err);
+    console.error("[api/businesses] Database error", err);
     return NextResponse.json(
       {
-        error:
-          "Could not load businesses. The database may be unavailable or DATABASE_URL may be missing or incorrect for this environment.",
+        error: describeDatabaseLoadFailure(err),
         businesses: [],
       },
       { status: 503 },

@@ -1,15 +1,15 @@
 import { PrismaClient } from "@prisma/client";
 
-declare global {
-  var prismaGlobal: PrismaClient | undefined;
-}
+const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
-export const prisma =
-  global.prismaGlobal ??
-  new PrismaClient({
+function createPrismaClient() {
+  return new PrismaClient({
     log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
   });
+}
 
-if (process.env.NODE_ENV !== "production") {
-  global.prismaGlobal = prisma;
+/** Reuse one client per serverless isolate (Vercel) to avoid connection storms. */
+export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+if (!globalForPrisma.prisma) {
+  globalForPrisma.prisma = prisma;
 }
