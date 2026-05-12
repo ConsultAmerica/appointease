@@ -56,7 +56,7 @@ export async function GET() {
       return NextResponse.json(
         {
           error:
-            "Database connection timed out. Confirm Postgres is running and DATABASE_URL in .env.local is reachable from this machine.",
+            "Could not reach the database in time. Try again shortly. If this keeps happening, confirm DATABASE_URL for this deployment and that your database accepts connections (SSL, allowlists, or paused free tiers).",
           businesses: [],
         },
         { status: 503 },
@@ -65,7 +65,8 @@ export async function GET() {
     console.error("[api/businesses] Database error — is DATABASE_URL correct and Postgres running?", err);
     return NextResponse.json(
       {
-        error: "Could not load businesses from the database.",
+        error:
+          "Could not load businesses. The database may be unavailable or DATABASE_URL may be missing or incorrect for this environment.",
         businesses: [],
       },
       { status: 503 },

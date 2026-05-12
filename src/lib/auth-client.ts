@@ -30,13 +30,13 @@ export function navigateAfterCredentialsSignIn(kind: PostAuthWelcomeKind = "sign
 /** `error` is the Auth.js error type; `code` is the optional credential error code (e.g. `database_unavailable`). */
 export function mapCredentialsSignInError(error: string | undefined, code?: string | undefined): string {
   if (code === "database_unavailable") {
-    return "Cannot reach the database (PostgreSQL). Start Postgres, run `docker compose up -d` from the appointease folder if you use Docker, confirm DATABASE_URL in .env, then try again.";
+    return "Cannot reach the database right now. Try again in a moment. If you run this app yourself, confirm DATABASE_URL is set (e.g. in Vercel env or .env) and your Postgres provider allows connections.";
   }
   if (!error || error === "CredentialsSignin") {
     return "Invalid email or password.";
   }
   if (error === "Configuration") {
-    return "Server sign-in is misconfigured (often missing or invalid AUTH_SECRET). Check the server console and .env.local.";
+    return "Server sign-in is misconfigured (often missing or invalid AUTH_SECRET). Check deployment environment variables or the server console.";
   }
   if (error === "AccessDenied") {
     return "Sign in was denied. Your account may need email verification.";

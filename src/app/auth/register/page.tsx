@@ -43,9 +43,9 @@ export default function RegisterPage() {
         if (!res.ok) {
           const msg =
             typeof data.error === "string" && data.error.trim()
-              ? data.error
+              ? data.error.trim()
               : `Could not load businesses (HTTP ${res.status}).`;
-          throw new Error(`${msg} Is Postgres running and DATABASE_URL correct?`);
+          throw new Error(msg);
         }
         const raw = data.businesses;
         const list: Business[] = Array.isArray(raw)
@@ -69,7 +69,7 @@ export default function RegisterPage() {
         setBusinessListState("error");
         setBusinessListError(
           isAbort
-            ? "Request timed out (15s). Check DATABASE_URL and that the dev server can reach Postgres."
+            ? "Request timed out. Try again. If you self-host, confirm DATABASE_URL is set and the database is reachable from the app."
             : err instanceof Error
               ? err.message
               : "Could not load businesses.",
@@ -199,7 +199,7 @@ export default function RegisterPage() {
       ) : null}
       {businessListState === "error" ? (
         <div className="mt-3 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-900" role="alert">
-          <p className="font-medium">Could not load the business list</p>
+          <p className="font-medium">Could not load clinics</p>
           <p className="mt-1">{businessListError}</p>
           <button
             type="button"

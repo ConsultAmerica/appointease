@@ -14,7 +14,7 @@ type Health = {
 };
 
 /**
- * Setup hints from `/api/health`: Postgres (core app) and AI chat (live vs demo vs off).
+ * Setup hints from `/api/health`: Postgres (core app) and optional admin demo-mode notice.
  */
 export function DatabaseAlert() {
   const pathname = usePathname() ?? "";
@@ -43,13 +43,12 @@ export function DatabaseAlert() {
 
   const dbDown = health?.database !== "up";
   const chatMode = health?.chatMode ?? "off";
-  const showProdOpenAiHint = health?.database === "up" && chatMode === "off";
   const showDemoChatHint = health?.database === "up" && chatMode === "demo";
   const isDevelopment = health?.isDevelopment ?? false;
   /** Demo notice on admin routes only (portfolio-friendly copy in production). */
   const showAdminDemoStatus = showDemoChatHint && isAdminRoute;
 
-  if (!dbDown && !showProdOpenAiHint && !showAdminDemoStatus) return null;
+  if (!dbDown && !showAdminDemoStatus) return null;
 
   return (
     <div className="space-y-0" role="region" aria-label="Environment setup">
@@ -96,17 +95,6 @@ export function DatabaseAlert() {
               </p>
             )}
           </div>
-        </div>
-      ) : null}
-      {showProdOpenAiHint ? (
-        <div className="border-b border-sky-300 bg-sky-50 px-4 py-3 text-center text-sm leading-relaxed text-sky-950">
-          <strong className="font-semibold">AI chat is off in production</strong> (no <code className="rounded bg-sky-100 px-1 py-0.5 text-xs">OPENAI_API_KEY</code> and{" "}
-          <code className="rounded bg-sky-100 px-1 py-0.5 text-xs">ALLOW_DEMO_AGENT</code> is not set). Set the key
-          or, for a private demo only, set <code className="rounded bg-sky-100 px-1 py-0.5 text-xs">ALLOW_DEMO_AGENT=true</code>.{" "}
-          <a href="/book" className="font-medium text-sky-900 underline underline-offset-2">
-            /book
-          </a>{" "}
-          works without OpenAI.
         </div>
       ) : null}
     </div>

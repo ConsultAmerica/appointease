@@ -247,9 +247,9 @@ export default function BookPage() {
       if (!res.ok) {
         const msg =
           typeof payload.error === "string" && payload.error.trim()
-            ? payload.error
+            ? payload.error.trim()
             : `Could not load businesses (HTTP ${res.status}).`;
-        setLoadError(`${msg} Check that Postgres is running and DATABASE_URL in .env is correct.`);
+        setLoadError(msg);
         return;
       }
 
@@ -269,10 +269,10 @@ export default function BookPage() {
       const aborted = e instanceof Error && e.name === "AbortError";
       if (aborted) {
         setLoadError(
-          "Request timed out (18s). Start Postgres / check DATABASE_URL, or confirm the dev server is reachable.",
+          "This request timed out. Try again. If it keeps failing, the database may be slow or unreachable from the server.",
         );
       } else {
-        setLoadError("Could not reach the server. Check your network and that the dev server is running.");
+        setLoadError("Could not reach the server. Check your network and try again.");
       }
     } finally {
       window.clearTimeout(timeout);
