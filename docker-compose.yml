@@ -1,6 +1,6 @@
-# Local Postgres for AppointmentAI — use with DATABASE_URL in .env
-# Start: docker compose up -d
-# Stop:  docker compose down
+# Local PostgreSQL for AppointEase (matches default DATABASE_URL in .env.example).
+# From this folder: docker compose up -d
+# Then: npm run db:migrate && npm run db:seed
 
 services:
   postgres:

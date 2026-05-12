@@ -44,17 +44,18 @@ export async function GET() {
   const noShowRate = appointments.length === 0 ? 0 : Number(((cancelled / appointments.length) * 100).toFixed(1));
 
   const now = new Date();
-  const [totalBookings, upcoming, confirmed, cancelledTotal] = await Promise.all([
+  const [totalBookings, upcoming, confirmed, cancelledTotal, completed] = await Promise.all([
     prisma.appointment.count({ where: { businessId } }),
     prisma.appointment.count({
       where: {
         businessId,
-        status: { not: "CANCELLED" },
+        status: { notIn: ["CANCELLED", "COMPLETED"] },
         startAt: { gte: now },
       },
     }),
     prisma.appointment.count({ where: { businessId, status: "CONFIRMED" } }),
     prisma.appointment.count({ where: { businessId, status: "CANCELLED" } }),
+    prisma.appointment.count({ where: { businessId, status: "COMPLETED" } }),
   ]);
 
   return NextResponse.json({
@@ -65,6 +66,7 @@ export async function GET() {
       upcoming,
       confirmed,
       cancelled: cancelledTotal,
+      completed,
     },
   });
 }

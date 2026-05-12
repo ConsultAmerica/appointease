@@ -21,7 +21,16 @@ enum UserRole {
 enum AppointmentStatus {
   PENDING
   CONFIRMED
+  RESCHEDULED
   CANCELLED
+  COMPLETED
+}
+
+enum SpecialRequestStatus {
+  NONE
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 model Business {
@@ -34,6 +43,9 @@ model Business {
   availability     AvailabilityRule[]
   appointments     Appointment[]
   notificationLogs NotificationLog[]
+  timeBlocks       TimeBlock[]
+  staffAvailabilityRules StaffAvailabilityRule[]
+  agentConversationLogs AgentConversationLog[]
   createdAt        DateTime            @default(now())
   updatedAt        DateTime            @updatedAt
 }
@@ -52,6 +64,23 @@ model User {
   verificationTokens VerificationToken[]
   resetTokens PasswordResetToken[]
   authAuditLogs AuthAuditLog[]
+  assignedAppointments Appointment[] @relation("AppointmentStaff")
+  staffAvailabilityRules StaffAvailabilityRule[]
+  staffTimeBlocks TimeBlock[] @relation("StaffTimeBlocks")
+  agentConversationLogs AgentConversationLog[]
+  staffServices StaffService[]
+}
+
+model StaffService {
+  id          String   @id @default(cuid())
+  staffUserId String
+  staffUser   User     @relation(fields: [staffUserId], references: [id], onDelete: Cascade)
+  serviceId   String
+  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([staffUserId, serviceId])
+  @@index([serviceId])
 }
 
 enum AuthEventType {
@@ -111,9 +140,12 @@ model Service {
   business          Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
   name              String
   durationMinutes   Int
+  /** Minutes after this service ends before another booking may start (turnover / cleanup). */
+  bufferMinutesAfter Int          @default(0)
   priceCents        Int           @default(0)
   isActive          Boolean       @default(true)
   appointments      Appointment[]
+  staffServices     StaffService[]
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 }
@@ -135,11 +167,17 @@ model Appointment {
   business               Business          @relation(fields: [businessId], references: [id], onDelete: Cascade)
   serviceId              String
   service                Service           @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  assignedStaffUserId    String?
+  assignedStaff          User?             @relation("AppointmentStaff", fields: [assignedStaffUserId], references: [id], onDelete: SetNull)
   customerName           String
   customerEmail          String
   startAt                DateTime
   endAt                  DateTime
   status                 AppointmentStatus @default(PENDING)
+  /** True when the booking was created from the AI assistant (live tools or demo portfolio flow). */
+  createdViaAiChat       Boolean           @default(false)
+  specialRequestNote     String?
+  specialRequestStatus    SpecialRequestStatus @default(NONE)
   reminderSentAt         DateTime?
   confirmationSentAt     DateTime?
   createdAt              DateTime          @default(now())
@@ -147,6 +185,49 @@ model Appointment {
 
   @@index([businessId, startAt])
   @@index([businessId, status])
+  @@index([assignedStaffUserId])
+}
+
+model TimeBlock {
+  id          String   @id @default(cuid())
+  businessId  String
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  staffUserId String?
+  staffUser   User?    @relation("StaffTimeBlocks", fields: [staffUserId], references: [id], onDelete: Cascade)
+  startAt     DateTime
+  endAt       DateTime
+  reason      String?
+
+  @@index([businessId, startAt])
+}
+
+model StaffAvailabilityRule {
+  id          String   @id @default(cuid())
+  businessId  String
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  staffUserId String
+  staffUser   User     @relation(fields: [staffUserId], references: [id], onDelete: Cascade)
+  dayOfWeek   Int
+  startMinute Int
+  endMinute   Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([businessId, staffUserId])
+}
+
+model AgentConversationLog {
+  id            String    @id @default(cuid())
+  businessId    String?
+  business      Business? @relation(fields: [businessId], references: [id], onDelete: SetNull)
+  userId        String?
+  user          User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  customerEmail String?
+  messages      Json
+  reply         String    @db.Text
+  createdAt     DateTime  @default(now())
+
+  @@index([businessId, createdAt])
 }
 
 model NotificationLog {

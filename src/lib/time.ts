@@ -23,8 +23,10 @@ export function buildSlots(params: {
   dayOfWeekRules: Array<{ startMinute: number; endMinute: number }>;
   durationMinutes: number;
   existingAppointments: Array<{ startAt: Date; endAt: Date }>;
+  /** Extra busy intervals (e.g. admin/staff blackout times). */
+  blockedIntervals?: Array<{ startAt: Date; endAt: Date }>;
 }): Date[] {
-  const { day, dayOfWeekRules, durationMinutes, existingAppointments } = params;
+  const { day, dayOfWeekRules, durationMinutes, existingAppointments, blockedIntervals = [] } = params;
   const slots: Date[] = [];
 
   for (const rule of dayOfWeekRules) {
@@ -36,9 +38,9 @@ export function buildSlots(params: {
       const slotStart = fromMinuteOfDay(day, minute);
       const slotEnd = addMinutes(slotStart, durationMinutes);
 
-      const isBlocked = existingAppointments.some((appt) =>
-        overlaps(slotStart, slotEnd, appt.startAt, appt.endAt),
-      );
+      const isBlocked =
+        existingAppointments.some((appt) => overlaps(slotStart, slotEnd, appt.startAt, appt.endAt)) ||
+        blockedIntervals.some((b) => overlaps(slotStart, slotEnd, b.startAt, b.endAt));
 
       if (!isBlocked) {
         slots.push(slotStart);

@@ -25,6 +25,7 @@ export async function GET() {
     },
     include: {
       service: true,
+      assignedStaff: { select: { id: true, fullName: true, email: true } },
     },
     orderBy: { startAt: "asc" },
   });

@@ -13,5 +13,8 @@ export default async function AuthContinuePage() {
   if (session.user.role === "CUSTOMER") {
     redirect("/customer");
   }
+  if (session.user.role === "STAFF") {
+    redirect("/staff");
+  }
   redirect("/admin");
 }

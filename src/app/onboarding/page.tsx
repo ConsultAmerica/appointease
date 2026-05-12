@@ -1,15 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
+import { CANONICAL_DEFAULT_AVAILABILITY, CANONICAL_DEMO_SERVICES } from "@/lib/canonical-demo-catalog";
 import { getBrowserTimezone, getTimezoneOptions } from "@/lib/timezones";
 
-const defaultAvailability = [
-  { dayOfWeek: 1, startMinute: 9 * 60, endMinute: 17 * 60 },
-  { dayOfWeek: 2, startMinute: 9 * 60, endMinute: 17 * 60 },
-  { dayOfWeek: 3, startMinute: 9 * 60, endMinute: 17 * 60 },
-  { dayOfWeek: 4, startMinute: 9 * 60, endMinute: 17 * 60 },
-  { dayOfWeek: 5, startMinute: 9 * 60, endMinute: 17 * 60 },
-];
+const defaultAvailability = [...CANONICAL_DEFAULT_AVAILABILITY];
 
 export default function OnboardingPage() {
   const [businessName, setBusinessName] = useState("");
@@ -19,10 +15,12 @@ export default function OnboardingPage() {
   const timezoneOptions = useMemo(() => getTimezoneOptions(), []);
   const [timezone, setTimezone] = useState(() => getBrowserTimezone());
   const [status, setStatus] = useState<string | null>(null);
+  const [createdBusinessId, setCreatedBusinessId] = useState<string | null>(null);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setStatus("Creating business...");
+    setCreatedBusinessId(null);
     const res = await fetch("/api/onboarding", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -32,14 +30,11 @@ export default function OnboardingPage() {
         ownerEmail,
         ownerPassword,
         timezone,
-        services: [
-          { name: "Consultation", durationMinutes: 30, priceCents: 5000 },
-          { name: "Follow-up", durationMinutes: 45, priceCents: 7000 },
-          { name: "Routine Check-up", durationMinutes: 20, priceCents: 4000 },
-          { name: "Extended Consultation", durationMinutes: 60, priceCents: 9500 },
-          { name: "Urgent Visit", durationMinutes: 25, priceCents: 8000 },
-          { name: "Treatment Session", durationMinutes: 40, priceCents: 7800 },
-        ],
+        services: CANONICAL_DEMO_SERVICES.map((s) => ({
+          name: s.name,
+          durationMinutes: s.durationMinutes,
+          priceCents: s.priceCents,
+        })),
         availability: defaultAvailability,
       }),
     });
@@ -50,7 +45,8 @@ export default function OnboardingPage() {
       return;
     }
 
-    setStatus(`Done! Business created. Use businessId: ${data.businessId}`);
+    setCreatedBusinessId(typeof data.businessId === "string" ? data.businessId : null);
+    setStatus("Business created. You can sign in as the owner and finish setup below.");
   }
 
   return (
@@ -117,6 +113,44 @@ export default function OnboardingPage() {
       </form>
 
       {status && <p className="mt-4 rounded bg-slate-100 p-3 text-sm">{status}</p>}
+
+      {createdBusinessId ? (
+        <section className="mt-8 rounded-xl border border-teal-200 bg-teal-50/60 p-6">
+          <h2 className="text-lg font-semibold text-slate-900">Next steps</h2>
+          <p className="mt-2 text-sm text-slate-700">
+            Sign in at <Link className="font-medium text-teal-800 underline" href="/auth/login">/auth/login</Link> with
+            the owner email you just used, then:
+          </p>
+          <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm text-slate-800">
+            <li>
+              <Link className="font-medium text-teal-800 underline" href="/admin/settings">
+                Add or edit services
+              </Link>{" "}
+              (starter services are already created).
+            </li>
+            <li>
+              <Link className="font-medium text-teal-800 underline" href="/admin/settings">
+                Add staff
+              </Link>{" "}
+              and link them to the services they perform.
+            </li>
+            <li>
+              <Link className="font-medium text-teal-800 underline" href="/admin/settings">
+                Set business hours
+              </Link>{" "}
+              and staff availability so booking slots line up.
+            </li>
+            <li>
+              Open{" "}
+              <Link className="font-medium text-teal-800 underline" href="/chat">
+                AI booking assistant
+              </Link>{" "}
+              (signed in as a customer linked to this clinic) to try natural-language booking.
+            </li>
+          </ol>
+          <p className="mt-4 font-mono text-xs text-slate-600">businessId: {createdBusinessId}</p>
+        </section>
+      ) : null}
     </main>
   );
 }

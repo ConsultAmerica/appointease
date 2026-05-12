@@ -34,6 +34,9 @@ export function SiteHeader({ session }: { session: Session | null }) {
           <NavLink href="/book" isHome={isHome} active={pathname.startsWith("/book")}>
             Book Appointment
           </NavLink>
+          <NavLink href="/chat" isHome={isHome} active={pathname.startsWith("/chat")}>
+            AI chat
+          </NavLink>
           {session?.user?.role === "CUSTOMER" ? (
             <NavLink href="/customer" isHome={isHome} active={pathname.startsWith("/customer")}>
               My Appointments
@@ -138,11 +141,25 @@ function AdminStaffUserMenu({
         <Link href="/admin" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
           Admin dashboard
         </Link>
+        <Link href="/staff" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
+          Staff workspace
+        </Link>
+        <Link href="/admin/settings" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
+          Workspace settings
+        </Link>
+        {staffRole === "ADMIN" ? (
+          <Link href="/admin/ai-logs" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
+            AI conversation logs
+          </Link>
+        ) : null}
         <Link href="/onboarding" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
           Business setup
         </Link>
         <Link href="/book" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
           Book appointment
+        </Link>
+        <Link href="/chat" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
+          AI chat booking
         </Link>
         <button
           type="button"
@@ -213,6 +230,9 @@ function CustomerUserMenu({
         <Link href="/book" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
           Book appointment
         </Link>
+        <Link href="/chat" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
+          AI chat booking
+        </Link>
         <button
           type="button"
           className={`w-full px-4 py-2.5 text-left text-sm font-medium ${item}`}
@@ -232,10 +252,10 @@ function HeaderAuth({ session, isHome }: { session: Session | null; isHome: bool
   if (!session?.user) {
     return (
       <>
-        <Link href="/auth/login" className={`font-medium ${linkMuted}`}>
+        <a href="/auth/login" className={`font-medium ${linkMuted}`}>
           Sign In
-        </Link>
-        <Link
+        </a>
+        <a
           href="/auth/register"
           className={
             isHome
@@ -244,7 +264,7 @@ function HeaderAuth({ session, isHome }: { session: Session | null; isHome: bool
           }
         >
           Get Started
-        </Link>
+        </a>
       </>
     );
   }

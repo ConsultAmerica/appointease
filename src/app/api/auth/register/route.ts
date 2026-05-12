@@ -4,6 +4,7 @@ import { z } from "zod";
 import { logAuthEvent } from "@/lib/auth-audit";
 import { verificationEmailHtml } from "@/lib/email-templates";
 import { sendEmail } from "@/lib/email";
+import { CANONICAL_DEMO_SERVICES } from "@/lib/canonical-demo-catalog";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit, csrfError, verifyCsrf } from "@/lib/security";
 import { generateRawToken, hashToken } from "@/lib/tokens";
@@ -89,14 +90,7 @@ export async function POST(req: Request) {
             },
           },
           services: {
-            create: [
-              { name: "Consultation", durationMinutes: 30, priceCents: 5000 },
-              { name: "Follow-up", durationMinutes: 45, priceCents: 7000 },
-              { name: "Routine Check-up", durationMinutes: 20, priceCents: 4000 },
-              { name: "Extended Consultation", durationMinutes: 60, priceCents: 9500 },
-              { name: "Urgent Visit", durationMinutes: 25, priceCents: 8000 },
-              { name: "Treatment Session", durationMinutes: 40, priceCents: 7800 },
-            ],
+            create: CANONICAL_DEMO_SERVICES.map((s) => ({ ...s })),
           },
           availability: {
             create: [
@@ -123,15 +117,19 @@ export async function POST(req: Request) {
         metadata: { role: "ADMIN", businessId: business.id },
       });
 
-      await sendEmail({
-        to: input.email,
-        subject: "Verify your AppointmentAI email",
-        html: verificationEmailHtml({
-          appUrl,
-          verifyToken: verificationTokenRaw,
-          recipientName: input.fullName,
-        }),
-      });
+      try {
+        await sendEmail({
+          to: input.email,
+          subject: "Verify your AppointmentAI email",
+          html: verificationEmailHtml({
+            appUrl,
+            verifyToken: verificationTokenRaw,
+            recipientName: input.fullName,
+          }),
+        });
+      } catch (emailErr) {
+        console.error("[register] ADMIN verification email failed (account was still created)", emailErr);
+      }
 
       return NextResponse.json({ ok: true, businessId: business.id }, { status: 201 });
     }
@@ -171,18 +169,23 @@ export async function POST(req: Request) {
       metadata: { role: "CUSTOMER", businessId: input.businessId },
     });
 
-    await sendEmail({
-      to: input.email,
-      subject: "Verify your AppointmentAI email",
-      html: verificationEmailHtml({
-        appUrl,
-        verifyToken: verificationTokenRaw,
-        recipientName: input.fullName,
-      }),
-    });
+    try {
+      await sendEmail({
+        to: input.email,
+        subject: "Verify your AppointmentAI email",
+        html: verificationEmailHtml({
+          appUrl,
+          verifyToken: verificationTokenRaw,
+          recipientName: input.fullName,
+        }),
+      });
+    } catch (emailErr) {
+      console.error("[register] CUSTOMER verification email failed (account was still created)", emailErr);
+    }
 
     return NextResponse.json({ ok: true, userId: user.id }, { status: 201 });
   } catch (error) {
+    console.error("[register] Registration error", error);
     return NextResponse.json(
       { error: "Registration failed", details: error instanceof Error ? error.message : "Unknown error" },
       { status: 400 },

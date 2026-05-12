@@ -1,14 +1,8 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { signIn } from "next-auth/react";
-
-function signInErrorMessage(code: string | undefined): string {
-  if (!code || code === "CredentialsSignin") {
-    return "Invalid email or password.";
-  }
-  return `Sign in failed: ${code}`;
-}
+import { signIn, type SignInResponse } from "next-auth/react";
+import { mapCredentialsSignInError, navigateAfterCredentialsSignIn } from "@/lib/auth-client";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -22,14 +16,25 @@ export default function LoginPage() {
     setSubmitting(true);
 
     try {
-      const result = await signIn("credentials", {
-        email: email.trim(),
-        password,
-        redirect: false,
-      });
+      let result: SignInResponse | undefined;
+      try {
+        result = await signIn("credentials", {
+          email: email.trim(),
+          password,
+          redirect: false,
+        });
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        setError(
+          msg.includes("Invalid URL") || msg.includes("JSON")
+            ? "Unexpected response from the sign-in service. Refresh the page and try again."
+            : `Sign in failed: ${msg}`,
+        );
+        return;
+      }
 
       if (result?.error) {
-        setError(signInErrorMessage(result.error ?? undefined));
+        setError(mapCredentialsSignInError(result.error ?? undefined, result.code ?? undefined));
         return;
       }
 
@@ -38,12 +43,8 @@ export default function LoginPage() {
         return;
       }
 
-      /**
-       * Full navigation to `/auth/continue` — session cookie is already set on the credentials
-       * response. Middleware (or the continue page) routes by role so we don’t rely on client
-       * `getSession()` timing, which often breaks on LAN / slow devices.
-       */
-      window.location.replace("/auth/continue");
+      /** Deferred navigation so `Set-Cookie` is committed before `/auth/continue` runs. */
+      navigateAfterCredentialsSignIn();
     } finally {
       setSubmitting(false);
     }

@@ -17,6 +17,42 @@ Starter codebase for an appointment-scheduling app inspired by:
 - **Auth audit log** (`AuthAuditLog`) for registration, login success/failure, logout, verification, password reset
 - Prisma + PostgreSQL schema and seed data
 
+## Admin dashboard
+
+Admins can review and operate the workspace from **`/admin`** (overview) and **`/admin/settings`**:
+
+- **Today’s appointments** — same-day schedule from live data
+- **Upcoming appointments** — future PENDING / CONFIRMED visits
+- **Canceled appointments** — recent cancelled rows for context
+- **Staff schedule** — staff users and per-staff weekly hours (settings)
+- **Services** — duration, price, buffer; activate/deactivate (settings)
+- **Customer list** — customers derived from appointment activity (overview)
+- **AI conversation logs** — `/admin/ai-logs` for chat audit trail
+
+Booking flows send **email** today via Nodemailer (SMTP or console fallback); see `src/lib/email.ts` and booking routes.
+
+## Roadmap: SaaS-grade integrations
+
+These are planned **advanced** layers after the text-based booking path is solid. They keep the product feeling like a real SaaS for clinics.
+
+### 1. Email / SMS confirmation
+
+After a successful book or business confirmation, customers should see concise copy such as:
+
+> *Your appointment is confirmed for Friday at 3:15 PM.*
+
+**Email:** keep a single abstraction in `sendEmail` and add providers behind env flags — e.g. [Resend](https://resend.com/) HTTP API, [SendGrid](https://sendgrid.com/) mail send, or [Gmail API](https://developers.google.com/gmail/api) for small workspaces.
+
+**SMS:** [Twilio](https://www.twilio.com/) (or similar) for transactional SMS; store opt-in where required, template messages, and delivery status next to `NotificationLog`.
+
+### 2. Google Calendar sync
+
+On **PENDING** or **CONFIRMED** appointment create/update/cancel, mirror the event to **Google Calendar** (per business or per staff OAuth). Use the [Calendar API](https://developers.google.com/calendar) with stored refresh tokens; store `googleEventId` on `Appointment` for idempotent updates.
+
+### 3. Voice agent (OpenAI Realtime)
+
+Let customers **speak** instead of typing (e.g. *“Do you have any openings tomorrow?”*). Orchestrate with **OpenAI Agents SDK** + [Realtime / voice](https://platform.openai.com/docs/guides/realtime) as a **later phase** after text chat + tools are stable: server-side session, tool bridging to the same `check_availability` / `book_appointment` paths, and push-to-talk or WebRTC in the browser.
+
 ## Tech stack
 
 - Next.js (App Router) + TypeScript + Tailwind

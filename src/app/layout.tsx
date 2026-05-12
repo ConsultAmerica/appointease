@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { DatabaseAlert } from "@/components/database-alert";
+import { PostSignInWelcome } from "@/components/post-sign-in-welcome";
 import { Providers } from "@/components/providers";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -35,6 +37,8 @@ export default async function RootLayout({
       <body className="flex min-h-full flex-col bg-slate-50 text-slate-900">
         <Providers session={session}>
           <SiteHeader session={session} />
+          <DatabaseAlert />
+          <PostSignInWelcome />
           <div className="flex flex-1 flex-col">{children}</div>
           <SiteFooter session={session} />
         </Providers>

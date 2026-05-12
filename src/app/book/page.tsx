@@ -191,6 +191,7 @@ export default function BookPage() {
   const [businessesLoaded, setBusinessesLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [step, setStep] = useState(1);
+  const [specialRequest, setSpecialRequest] = useState("");
 
   const displayName = nameDraft !== undefined ? nameDraft : (session?.user?.name ?? "");
   const displayEmail = emailDraft !== undefined ? emailDraft : (session?.user?.email ?? "");
@@ -206,10 +207,13 @@ export default function BookPage() {
   const businessesFetchRef = useRef<AbortController | null>(null);
   /** Monotonic id so only the latest in-flight load may flip `businessesLoaded` — avoids stuck spinner when a superseded fetch’s `finally` skips setting loaded. */
   const businessesLoadSeq = useRef(0);
+  /** Ignore AbortError teardown (navigation / Strict Mode) so we don’t show a bogus “timed out” message. */
+  const pageMountedRef = useRef(false);
 
   const loadBusinesses = useCallback(async () => {
     const seq = ++businessesLoadSeq.current;
     const isCurrent = () => businessesLoadSeq.current === seq;
+    const alive = () => isCurrent() && pageMountedRef.current;
 
     businessesFetchRef.current?.abort();
     const controller = new AbortController();
@@ -226,18 +230,18 @@ export default function BookPage() {
         signal: controller.signal,
       });
 
-      if (!isCurrent()) return;
+      if (!alive()) return;
 
       let data: unknown;
       try {
         data = await res.json();
       } catch {
-        if (!isCurrent()) return;
+        if (!alive()) return;
         setLoadError("Invalid response from server. Try refreshing the page.");
         return;
       }
 
-      if (!isCurrent()) return;
+      if (!alive()) return;
 
       const payload = data && typeof data === "object" ? (data as Record<string, unknown>) : {};
       if (!res.ok) {
@@ -250,16 +254,18 @@ export default function BookPage() {
       }
 
       const list = normalizeBusinesses(payload.businesses);
+      if (!alive()) return;
       setBusinesses(list);
       if (list.length === 0) return;
 
       const preferred = customerBusinessId
         ? list.find((b) => b.id === customerBusinessId) ?? list[0]
         : list[0];
+      if (!alive()) return;
       setBusinessId(preferred.id);
       setServiceId(preferred.services?.[0]?.id ?? "");
     } catch (e) {
-      if (!isCurrent()) return;
+      if (!alive()) return;
       const aborted = e instanceof Error && e.name === "AbortError";
       if (aborted) {
         setLoadError(
@@ -270,6 +276,7 @@ export default function BookPage() {
       }
     } finally {
       window.clearTimeout(timeout);
+      /** Always mark complete for the latest in-flight request (avoids endless spinner under Strict Mode / abort races). */
       if (isCurrent()) {
         setBusinessesLoaded(true);
       }
@@ -277,10 +284,14 @@ export default function BookPage() {
   }, [customerBusinessId]);
 
   useEffect(() => {
-    queueMicrotask(() => {
-      void loadBusinesses();
-    });
-  }, [loadBusinesses]);
+    if (sessionStatus === "loading") return;
+    pageMountedRef.current = true;
+    void loadBusinesses();
+    return () => {
+      pageMountedRef.current = false;
+      businessesFetchRef.current?.abort();
+    };
+  }, [loadBusinesses, sessionStatus]);
 
   const services = useMemo(
     () => businesses.find((b) => b.id === businessId)?.services ?? [],
@@ -365,6 +376,7 @@ export default function BookPage() {
         customerName,
         customerEmail,
         startAt: selectedSlot,
+        ...(specialRequest.trim() ? { specialRequestNote: specialRequest.trim() } : {}),
       }),
     });
     let data: { error?: string; details?: string; appointment?: { id: string } } = {};
@@ -389,6 +401,7 @@ export default function BookPage() {
   const hideWizardIntro =
     businessesLoaded && !loadError && businesses.length > 0 && Boolean(bookingSuccess);
 
+  const waitingForSession = sessionStatus === "loading";
   const loadingBusinesses = !businessesLoaded && !loadError;
   const canStartWizard =
     businessesLoaded && !loadError && businesses.length > 0 && !bookingSuccess;
@@ -403,7 +416,9 @@ export default function BookPage() {
               Complete each step. Your request stays <strong>pending</strong> until the business confirms.
             </p>
           ) : loadingBusinesses ? (
-            <p className="mt-1 text-sm text-slate-500">Loading services and locations…</p>
+            <p className="mt-1 text-sm text-slate-500">
+              {waitingForSession ? "Checking your session…" : "Loading services and locations…"}
+            </p>
           ) : null}
         </>
       )}
@@ -418,9 +433,13 @@ export default function BookPage() {
             className="h-10 w-10 animate-spin rounded-full border-2 border-teal-700 border-t-transparent"
             aria-hidden
           />
-          <p className="mt-4 text-sm font-medium text-slate-800">Loading services…</p>
+          <p className="mt-4 text-sm font-medium text-slate-800">
+            {waitingForSession ? "Checking session…" : "Loading services…"}
+          </p>
           <p className="mt-1 max-w-sm text-center text-xs text-slate-500">
-            This should only take a moment. If it keeps spinning, refresh the page or try again in a little while.
+            {waitingForSession
+              ? "Hang tight while we confirm whether you’re signed in."
+              : "This should only take a moment. If it keeps spinning, refresh the page or try again in a little while."}
           </p>
         </div>
       )}
@@ -708,6 +727,18 @@ export default function BookPage() {
                     onChange={(e) => setEmailDraft(e.target.value)}
                     required
                     className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+                  />
+                </label>
+                <label className="block text-sm font-medium text-slate-700">
+                  Special requests <span className="font-normal text-slate-500">(optional)</span>
+                  <textarea
+                    name="booking-special-request"
+                    value={specialRequest}
+                    onChange={(e) => setSpecialRequest(e.target.value)}
+                    rows={3}
+                    maxLength={2000}
+                    placeholder="Access needs, preferred provider, or other notes staff can approve."
+                    className="mt-1 w-full resize-y rounded-lg border border-slate-300 px-3 py-2 text-slate-900"
                   />
                 </label>
                 <button

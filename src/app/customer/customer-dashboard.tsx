@@ -3,6 +3,8 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+
+import { AppointmentStatusBadge } from "@/components/appointment-status-badge";
 import { cancelCustomerAppointment } from "./actions";
 
 export type DashboardAppointment = {
@@ -11,11 +13,16 @@ export type DashboardAppointment = {
   businessName: string;
   startAt: string;
   endAt: string;
-  status: "PENDING" | "CONFIRMED" | "CANCELLED";
+  status: string;
   priceCents: number;
+  createdViaAiChat?: boolean;
 };
 
 type FilterTab = "all" | "upcoming" | "confirmed" | "pending" | "past";
+
+function isCalendarActive(status: string) {
+  return status === "PENDING" || status === "CONFIRMED" || status === "RESCHEDULED";
+}
 
 function formatShortId(id: string) {
   const alnum = id.replace(/[^a-zA-Z0-9]/g, "");
@@ -39,10 +46,12 @@ export function CustomerDashboard({
     const now = new Date();
     const total = appointments.length;
     const upcoming = appointments.filter(
-      (a) => a.status !== "CANCELLED" && new Date(a.startAt) >= now,
+      (a) => isCalendarActive(a.status) && new Date(a.startAt) >= now,
     ).length;
     const completed = appointments.filter(
-      (a) => a.status !== "CANCELLED" && new Date(a.endAt) < now,
+      (a) =>
+        a.status === "COMPLETED" ||
+        (isCalendarActive(a.status) && new Date(a.endAt) < now),
     ).length;
     const cancelled = appointments.filter((a) => a.status === "CANCELLED").length;
     return { total, upcoming, completed, cancelled };
@@ -51,7 +60,7 @@ export function CustomerDashboard({
   const sortedUpcoming = useMemo(() => {
     const now = new Date();
     return appointments
-      .filter((a) => a.status !== "CANCELLED" && new Date(a.startAt) >= now)
+      .filter((a) => isCalendarActive(a.status) && new Date(a.startAt) >= now)
       .sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime());
   }, [appointments]);
 
@@ -63,18 +72,18 @@ export function CustomerDashboard({
     return appointments.filter((a) => {
       const start = new Date(a.startAt);
       const isPast = start < now;
-      const isUpcoming = !isPast && a.status !== "CANCELLED";
+      const isUpcoming = !isPast && isCalendarActive(a.status);
       switch (filter) {
         case "all":
           return true;
         case "upcoming":
           return isUpcoming;
         case "confirmed":
-          return a.status === "CONFIRMED";
+          return a.status === "CONFIRMED" || a.status === "RESCHEDULED";
         case "pending":
           return a.status === "PENDING";
         case "past":
-          return isPast || a.status === "CANCELLED";
+          return isPast || a.status === "CANCELLED" || a.status === "COMPLETED";
         default:
           return true;
       }
@@ -174,19 +183,28 @@ export function CustomerDashboard({
                 </span>
               </div>
             </div>
+            <div className="flex w-fit shrink-0 flex-col items-end gap-2">
             <span
               className={`inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold ${
                 nextAppointment.status === "PENDING"
                   ? "bg-amber-300 text-amber-950"
                   : nextAppointment.status === "CONFIRMED"
                     ? "bg-emerald-300 text-emerald-950"
-                    : "bg-white/20 text-white"
+                    : nextAppointment.status === "RESCHEDULED"
+                      ? "bg-violet-300 text-violet-950"
+                      : "bg-white/20 text-white"
               }`}
             >
-              {(nextAppointment.status === "PENDING" || nextAppointment.status === "CONFIRMED") && (
+              {(nextAppointment.status === "PENDING" ||
+                nextAppointment.status === "CONFIRMED" ||
+                nextAppointment.status === "RESCHEDULED") && (
                 <span
                   className={`h-1.5 w-1.5 shrink-0 rounded-full ${
-                    nextAppointment.status === "PENDING" ? "bg-amber-800" : "bg-emerald-900"
+                    nextAppointment.status === "PENDING"
+                      ? "bg-amber-800"
+                      : nextAppointment.status === "RESCHEDULED"
+                        ? "bg-violet-900"
+                        : "bg-emerald-900"
                   }`}
                   aria-hidden
                 />
@@ -195,8 +213,16 @@ export function CustomerDashboard({
                 ? "Pending"
                 : nextAppointment.status === "CONFIRMED"
                   ? "Confirmed"
-                  : nextAppointment.status}
+                  : nextAppointment.status === "RESCHEDULED"
+                    ? "Rescheduled"
+                    : nextAppointment.status}
             </span>
+            {nextAppointment.createdViaAiChat ? (
+              <span className="max-w-[14rem] text-right text-[11px] font-medium text-teal-100/95">
+                AI-created · pending clinic confirmation
+              </span>
+            ) : null}
+            </div>
           </div>
         </section>
       )}
@@ -301,30 +327,8 @@ export function CustomerDashboard({
                 </div>
                 <div className="flex w-full flex-col gap-3 sm:w-auto sm:min-w-[130px] sm:items-end">
                   <div className="flex items-center justify-end gap-2">
-                    <span
-                      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
-                        a.status === "PENDING"
-                          ? "bg-amber-100 text-amber-900"
-                          : a.status === "CONFIRMED"
-                            ? "bg-emerald-100 text-emerald-900"
-                            : "bg-slate-100 text-slate-700"
-                      }`}
-                    >
-                      {(a.status === "PENDING" || a.status === "CONFIRMED") && (
-                        <span
-                          className={`h-1.5 w-1.5 shrink-0 rounded-full ${
-                            a.status === "PENDING" ? "bg-amber-600" : "bg-emerald-600"
-                          }`}
-                          aria-hidden
-                        />
-                      )}
-                      {a.status === "PENDING"
-                        ? "Pending"
-                        : a.status === "CONFIRMED"
-                          ? "Confirmed"
-                          : "Cancelled"}
-                    </span>
-                    {(a.status === "PENDING" || a.status === "CONFIRMED") && (
+                    <AppointmentStatusBadge status={a.status} createdViaAiChat={Boolean(a.createdViaAiChat)} />
+                    {isCalendarActive(a.status) && (
                       <form action={cancelCustomerAppointment} className="inline">
                         <input type="hidden" name="appointmentId" value={a.id} />
                         <button

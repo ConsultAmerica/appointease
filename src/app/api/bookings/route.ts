@@ -3,7 +3,9 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { bookingRequestReceivedHtml } from "@/lib/email-templates";
 import { sendEmail } from "@/lib/email";
+import { hasBookableIntervalConflict } from "@/lib/appointment-conflicts";
 import { prisma } from "@/lib/prisma";
+import { staffCanPerformService } from "@/lib/staff-for-service";
 import { checkRateLimit } from "@/lib/security";
 
 const bookingSchema = z.object({
@@ -13,6 +15,8 @@ const bookingSchema = z.object({
   customerEmail: z.string().email(),
   /** ISO string from slot picker (z.iso.datetime is strict; keep booking resilient). */
   startAt: z.string().min(1),
+  specialRequestNote: z.string().max(2000).optional(),
+  assignedStaffUserId: z.string().optional(),
 });
 
 export async function POST(req: Request) {
@@ -61,18 +65,24 @@ export async function POST(req: Request) {
 
     const endAt = addMinutes(startAt, service.durationMinutes);
 
-    const conflict = await prisma.appointment.findFirst({
-      where: {
-        businessId: parsed.businessId,
-        status: { in: ["PENDING", "CONFIRMED"] },
-        AND: [{ startAt: { lt: endAt } }, { endAt: { gt: startAt } }],
-      },
-    });
+    let staffId: string | undefined;
+    if (parsed.assignedStaffUserId?.trim()) {
+      const ok = await staffCanPerformService(parsed.assignedStaffUserId.trim(), parsed.serviceId, parsed.businessId);
+      if (!ok) {
+        return NextResponse.json({ error: "Selected staff cannot perform this service" }, { status: 400 });
+      }
+      staffId = parsed.assignedStaffUserId.trim();
+    }
 
-    if (conflict) {
+    if (
+      await hasBookableIntervalConflict(parsed.businessId, startAt, endAt, {
+        staffUserId: staffId,
+      })
+    ) {
       return NextResponse.json({ error: "Slot no longer available" }, { status: 409 });
     }
 
+    const note = parsed.specialRequestNote?.trim();
     const appointment = await prisma.appointment.create({
       data: {
         businessId: parsed.businessId,
@@ -82,6 +92,8 @@ export async function POST(req: Request) {
         startAt,
         endAt,
         status: "PENDING",
+        ...(staffId ? { assignedStaffUserId: staffId } : {}),
+        ...(note ? { specialRequestNote: note, specialRequestStatus: "PENDING" as const } : {}),
       },
     });
 

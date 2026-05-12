@@ -1,5 +1,6 @@
 import { addHours } from "date-fns";
 import { NextResponse } from "next/server";
+import { ACTIVE_CALENDAR_STATUSES } from "@/lib/active-appointment-statuses";
 import { sendEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 
@@ -15,7 +16,7 @@ export async function POST(req: Request) {
 
   const appointments = await prisma.appointment.findMany({
     where: {
-      status: { in: ["PENDING", "CONFIRMED"] },
+      status: { in: [...ACTIVE_CALENDAR_STATUSES] },
       reminderSentAt: null,
       startAt: { gte: now, lte: windowEnd },
     },

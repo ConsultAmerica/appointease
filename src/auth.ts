@@ -1,8 +1,9 @@
 import bcrypt from "bcryptjs";
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { headers } from "next/headers";
 import { z } from "zod";
+import authConfig from "@/auth.config";
 import { logAuthEvent } from "@/lib/auth-audit";
 import { prisma } from "@/lib/prisma";
 
@@ -15,23 +16,27 @@ const credentialsSchema = z.object({
 });
 
 async function getRequestMeta() {
-  const h = await headers();
-  const ip =
-    h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? h.get("x-real-ip") ?? h.get("cf-connecting-ip") ?? null;
-  const userAgent = h.get("user-agent");
-  return { ip, userAgent };
+  try {
+    const h = await headers();
+    const ip =
+      h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? h.get("x-real-ip") ?? h.get("cf-connecting-ip") ?? null;
+    const userAgent = h.get("user-agent");
+    return { ip, userAgent };
+  } catch (e) {
+    console.warn("[auth] getRequestMeta failed (sign-in still proceeds)", e);
+    return { ip: null, userAgent: null };
+  }
+}
+
+if (process.env.NODE_ENV === "production" && !process.env.AUTH_SECRET?.trim()) {
+  console.error("[auth] AUTH_SECRET is required in production.");
+}
+if (process.env.NODE_ENV !== "production" && !process.env.AUTH_SECRET?.trim()) {
+  console.warn("[auth] AUTH_SECRET is empty — set it in .env.local for reliable sessions (see .env.example).");
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  /**
-   * Required when opening the app via LAN IP, tunnels, or any host other than localhost.
-   * Set AUTH_URL in .env to match how you open the site (e.g. http://192.168.1.10:3000).
-   */
-  trustHost: true,
-  secret: process.env.AUTH_SECRET,
-  session: {
-    strategy: "jwt",
-  },
+  ...authConfig,
   providers: [
     Credentials({
       name: "Email and Password",
@@ -60,7 +65,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           });
         } catch (err) {
           console.error("[auth] Database error during login — check DATABASE_URL and that Postgres is running.", err);
-          return null;
+          const e = new CredentialsSignin();
+          e.code = "database_unavailable";
+          throw e;
         }
         if (!user) {
           await logAuthEvent({
@@ -109,27 +116,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    jwt: async ({ token, user }) => {
-      if (user) {
-        token.role = (user as { role: string }).role;
-        token.businessId = (user as { businessId: string | null }).businessId;
-        token.name = user.name ?? null;
-        token.email = user.email ?? null;
-      }
-      return token;
-    },
-    session: async ({ session, token }) => {
-      if (session.user) {
-        session.user.id = token.sub ?? "";
-        session.user.role = (token.role as "ADMIN" | "STAFF" | "CUSTOMER") ?? "CUSTOMER";
-        session.user.businessId = (token.businessId as string | null) ?? null;
-        session.user.name = (token.name as string | undefined) ?? session.user.name;
-        session.user.email = (token.email as string | undefined) ?? session.user.email;
-      }
-      return session;
-    },
-  },
   events: {
     signIn: async ({ user }) => {
       const { ip, userAgent } = await getRequestMeta();
@@ -152,8 +138,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         });
       }
     },
-  },
-  pages: {
-    signIn: "/auth/login",
   },
 });

@@ -27,6 +27,7 @@ export default async function CustomerPage() {
     endAt: a.endAt.toISOString(),
     status: a.status,
     priceCents: a.service.priceCents,
+    createdViaAiChat: a.createdViaAiChat,
   }));
 
   const displayName =

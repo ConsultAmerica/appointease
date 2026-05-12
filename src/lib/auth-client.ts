@@ -4,6 +4,46 @@
 
 import { getSession } from "next-auth/react";
 
+const POST_SIGNIN_PATH = "/auth/continue";
+
+export type PostAuthWelcomeKind = "sign-in" | "register";
+
+/**
+ * After credentials `signIn(..., { redirect: false })`, the browser must apply `Set-Cookie`
+ * before the next navigation. A zero-delay tick + short wait avoids landing on `/auth/login`
+ * with “no session” on some browsers / LAN setups.
+ */
+export function navigateAfterCredentialsSignIn(kind: PostAuthWelcomeKind = "sign-in") {
+  try {
+    sessionStorage.setItem("appointease-welcome", kind);
+  } catch {
+    /* private mode / disabled storage */
+  }
+  const go = () => {
+    window.location.assign(POST_SIGNIN_PATH);
+  };
+  window.setTimeout(() => {
+    requestAnimationFrame(go);
+  }, 80);
+}
+
+/** `error` is the Auth.js error type; `code` is the optional credential error code (e.g. `database_unavailable`). */
+export function mapCredentialsSignInError(error: string | undefined, code?: string | undefined): string {
+  if (code === "database_unavailable") {
+    return "Cannot reach the database (PostgreSQL). Start Postgres, run `docker compose up -d` from the appointease folder if you use Docker, confirm DATABASE_URL in .env, then try again.";
+  }
+  if (!error || error === "CredentialsSignin") {
+    return "Invalid email or password.";
+  }
+  if (error === "Configuration") {
+    return "Server sign-in is misconfigured (often missing or invalid AUTH_SECRET). Check the server console and .env.local.";
+  }
+  if (error === "AccessDenied") {
+    return "Sign in was denied. Your account may need email verification.";
+  }
+  return `Sign in failed (${error}). Try again or contact support.`;
+}
+
 export type ClientSession = {
   user?: {
     name?: string | null;

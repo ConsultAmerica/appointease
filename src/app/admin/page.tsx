@@ -6,13 +6,19 @@ import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { AppointmentStatusBadge } from "@/components/appointment-status-badge";
+
 type Appointment = {
   id: string;
   customerName: string;
   customerEmail: string;
   startAt: string;
-  status: "PENDING" | "CONFIRMED" | "CANCELLED";
+  status: string;
+  createdViaAiChat?: boolean;
+  specialRequestNote?: string | null;
+  specialRequestStatus?: string;
   service: { name: string };
+  assignedStaff?: { id: string; fullName: string; email: string } | null;
 };
 
 type BusinessInfo = {
@@ -26,6 +32,35 @@ type AdminStats = {
   upcoming: number;
   confirmed: number;
   cancelled: number;
+  completed: number;
+};
+
+type OverviewRow = {
+  id: string;
+  startAt: string;
+  status?: string;
+  customerName: string;
+  customerEmail: string;
+  serviceName: string;
+  staffName?: string | null;
+  updatedAt?: string;
+  createdViaAiChat?: boolean;
+};
+
+type OverviewData = {
+  today: OverviewRow[];
+  upcoming: OverviewRow[];
+  cancelledRecent: OverviewRow[];
+  services: Array<{
+    id: string;
+    name: string;
+    durationMinutes: number;
+    bufferMinutesAfter: number;
+    priceCents: number;
+    isActive: boolean;
+  }>;
+  staff: Array<{ id: string; fullName: string; email: string }>;
+  customers: Array<{ email: string; appointmentCount: number }>;
 };
 
 function formatInTimeZone(iso: string, timeZone: string) {
@@ -66,18 +101,31 @@ export default function AdminPage() {
     upcoming: 0,
     confirmed: 0,
     cancelled: 0,
+    completed: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [overview, setOverview] = useState<OverviewData | null>(null);
+  const [resetDemoAvailable, setResetDemoAvailable] = useState(false);
+  const [resetBusy, setResetBusy] = useState(false);
 
   const load = useCallback(async () => {
     setError(null);
-    const [todayRes, analyticsRes, businessRes] = await Promise.all([
+    const [todayRes, analyticsRes, businessRes, overviewRes, healthRes] = await Promise.all([
       fetch("/api/admin/today", { credentials: "include" }),
       fetch("/api/admin/analytics", { credentials: "include" }),
       fetch("/api/admin/business", { credentials: "include" }),
+      fetch("/api/admin/overview", { credentials: "include" }),
+      fetch("/api/health", { cache: "no-store", credentials: "same-origin" }),
     ]);
+
+    if (healthRes.ok) {
+      const h = (await healthRes.json().catch(() => ({}))) as { resetDemoAvailable?: boolean };
+      setResetDemoAvailable(Boolean(h.resetDemoAvailable));
+    } else {
+      setResetDemoAvailable(false);
+    }
 
     if (todayRes.status === 401 || analyticsRes.status === 401 || businessRes.status === 401) {
       router.push("/auth/login");
@@ -87,6 +135,13 @@ export default function AdminPage() {
     if (businessRes.ok) {
       const bizData = (await businessRes.json()) as { business?: BusinessInfo };
       setBusiness(bizData.business ?? null);
+    }
+
+    if (overviewRes.ok) {
+      const ov = (await overviewRes.json()) as OverviewData;
+      setOverview(ov);
+    } else {
+      setOverview(null);
     }
 
     if (!todayRes.ok) {
@@ -111,11 +166,51 @@ export default function AdminPage() {
         upcoming: analyticsData.stats?.upcoming ?? 0,
         confirmed: analyticsData.stats?.confirmed ?? 0,
         cancelled: analyticsData.stats?.cancelled ?? 0,
+        completed: analyticsData.stats?.completed ?? 0,
       });
     }
 
     setLoading(false);
   }, [router]);
+
+  async function resetDemoData() {
+    if (!resetDemoAvailable) return;
+    if (
+      !window.confirm(
+        "Reset demo data for this business? Services, staff, hours, and sample appointments will be replaced. Your admin account stays.",
+      )
+    ) {
+      return;
+    }
+    setResetBusy(true);
+    setError(null);
+    try {
+      const csrfRes = await fetch("/api/app/csrf", { credentials: "include", cache: "no-store" });
+      const csrfJson = (await csrfRes.json().catch(() => ({}))) as { csrfToken?: string };
+      if (!csrfJson.csrfToken) {
+        setError("Could not load security token. Refresh the page.");
+        return;
+      }
+      const res = await fetch("/api/admin/reset-demo", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "x-csrf-token": csrfJson.csrfToken,
+        },
+        body: "{}",
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        setError(typeof j.error === "string" ? j.error : "Reset failed.");
+        return;
+      }
+      setLoading(true);
+      await load();
+    } finally {
+      setResetBusy(false);
+    }
+  }
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -216,6 +311,16 @@ export default function AdminPage() {
           >
             Refresh
           </button>
+          {resetDemoAvailable ? (
+            <button
+              type="button"
+              disabled={resetBusy}
+              onClick={() => void resetDemoData()}
+              className="inline-flex h-11 items-center justify-center rounded-xl border border-amber-300 bg-amber-50 px-4 text-sm font-medium text-amber-950 shadow-sm hover:bg-amber-100 disabled:opacity-50"
+            >
+              {resetBusy ? "Resetting…" : "Reset demo data"}
+            </button>
+          ) : null}
         </div>
       </div>
 
@@ -244,15 +349,126 @@ export default function AdminPage() {
                 </span>
               </div>
             </div>
-            <span className="inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full bg-amber-300 px-4 py-1.5 text-xs font-bold text-amber-950">
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-800" aria-hidden />
-              Pending
+            <span className="inline-flex w-fit shrink-0 flex-col items-end gap-1">
+              <AppointmentStatusBadge
+                status={firstPendingToday.status}
+                createdViaAiChat={Boolean(firstPendingToday.createdViaAiChat)}
+              />
+              {firstPendingToday.createdViaAiChat ? (
+                <span className="max-w-[14rem] text-right text-[11px] font-medium text-teal-100/95">
+                  Pending confirmation · from AI assistant
+                </span>
+              ) : null}
             </span>
           </div>
         </section>
       )}
 
-      <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {overview && (
+        <section className="mt-8 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm ring-1 ring-slate-100/80 md:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-base font-semibold text-slate-900">Workspace overview</h2>
+            <div className="flex flex-wrap gap-2 text-xs">
+              <Link
+                href="/admin/settings"
+                className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 font-medium text-slate-800 hover:bg-slate-100"
+              >
+                Services &amp; hours
+              </Link>
+              <Link
+                href="/admin/ai-logs"
+                className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 font-medium text-slate-800 hover:bg-slate-100"
+              >
+                AI conversations
+              </Link>
+              <Link
+                href="/staff"
+                className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 font-medium text-slate-800 hover:bg-slate-100"
+              >
+                Staff workspace
+              </Link>
+            </div>
+          </div>
+          <div className="mt-6 grid gap-6 lg:grid-cols-2">
+            <div>
+              <h3 className="text-sm font-semibold text-slate-800">Upcoming (next)</h3>
+              <ul className="mt-2 max-h-52 space-y-2 overflow-y-auto text-sm">
+                {overview.upcoming.slice(0, 8).map((a) => (
+                  <li key={a.id} className="rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2">
+                    <span className="font-medium text-slate-900">{a.serviceName}</span>
+                    <span className="text-slate-500"> · </span>
+                    {formatInTimeZone(a.startAt, tz)}
+                    {a.staffName ? (
+                      <span className="block text-xs text-slate-600">Staff: {a.staffName}</span>
+                    ) : null}
+                    <span className="block text-xs text-slate-500">{a.customerName}</span>
+                  </li>
+                ))}
+                {overview.upcoming.length === 0 && (
+                  <li className="text-sm text-slate-500">No upcoming bookings.</li>
+                )}
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-slate-800">Recent cancellations</h3>
+              <ul className="mt-2 max-h-52 space-y-2 overflow-y-auto text-sm">
+                {overview.cancelledRecent.map((a) => (
+                  <li key={a.id} className="rounded-lg border border-rose-100 bg-rose-50/60 px-3 py-2 text-rose-950">
+                    {a.serviceName} · {a.customerName}
+                    {a.updatedAt ? (
+                      <span className="block text-xs text-rose-800/80">
+                        Updated {new Date(a.updatedAt).toLocaleDateString()}
+                      </span>
+                    ) : null}
+                  </li>
+                ))}
+                {overview.cancelledRecent.length === 0 && (
+                  <li className="text-sm text-slate-500">No recent cancellations.</li>
+                )}
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-slate-800">Staff</h3>
+              <ul className="mt-2 space-y-1 text-sm text-slate-700">
+                {overview.staff.map((s) => (
+                  <li key={s.id}>
+                    {s.fullName} <span className="text-slate-500">({s.email})</span>
+                  </li>
+                ))}
+                {overview.staff.length === 0 && <li className="text-slate-500">No staff users yet.</li>}
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-slate-800">Services</h3>
+              <ul className="mt-2 max-h-40 space-y-1 overflow-y-auto text-sm text-slate-700">
+                {overview.services.map((s) => (
+                  <li key={s.id}>
+                    <span className={s.isActive ? "" : "text-slate-400 line-through"}>{s.name}</span> ·{" "}
+                    {s.durationMinutes}m +{s.bufferMinutesAfter}m buffer · ${(s.priceCents / 100).toFixed(0)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="lg:col-span-2">
+              <h3 className="text-sm font-semibold text-slate-800">Customers (by email)</h3>
+              <ul className="mt-2 flex max-h-36 flex-wrap gap-2 overflow-y-auto text-xs">
+                {overview.customers.map((c) => (
+                  <li
+                    key={c.email}
+                    className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-800"
+                  >
+                    {c.email}{" "}
+                    <span className="tabular-nums text-slate-500">({c.appointmentCount})</span>
+                  </li>
+                ))}
+                {overview.customers.length === 0 && <li className="text-slate-500">No customers yet.</li>}
+              </ul>
+            </div>
+          </div>
+        </section>
+      )}
+
+      <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <StatCard
           label="Total bookings"
           value={stats.totalBookings}
@@ -273,6 +489,13 @@ export default function AdminPage() {
           valueClassName="text-emerald-700"
           icon={<CheckIcon className="h-5 w-5 text-emerald-600" />}
           iconBg="bg-emerald-50"
+        />
+        <StatCard
+          label="Completed"
+          value={stats.completed}
+          valueClassName="text-slate-700"
+          icon={<CheckIcon className="h-5 w-5 text-slate-600" />}
+          iconBg="bg-slate-100"
         />
         <StatCard
           label="Cancelled"
@@ -318,35 +541,28 @@ export default function AdminPage() {
                         <p className="font-semibold text-slate-900">{appointment.service.name}</p>
                         <p className="text-sm text-slate-600">{appointment.customerName}</p>
                       </div>
-                      <span
-                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                          appointment.status === "PENDING"
-                            ? "bg-amber-100 text-amber-900"
-                            : appointment.status === "CONFIRMED"
-                              ? "bg-emerald-100 text-emerald-900"
-                              : "bg-slate-100 text-slate-700"
-                        }`}
-                      >
-                        {(appointment.status === "PENDING" || appointment.status === "CONFIRMED") && (
-                          <span
-                            className={`h-1.5 w-1.5 rounded-full ${
-                              appointment.status === "PENDING" ? "bg-amber-600" : "bg-emerald-600"
-                            }`}
-                            aria-hidden
-                          />
-                        )}
-                        {appointment.status === "PENDING"
-                          ? "Pending"
-                          : appointment.status === "CONFIRMED"
-                            ? "Confirmed"
-                            : "Cancelled"}
-                      </span>
+                      <AppointmentStatusBadge
+                        status={appointment.status}
+                        createdViaAiChat={Boolean(appointment.createdViaAiChat)}
+                      />
                     </div>
                     <p className="mt-2 text-sm text-slate-600">
                       {formatInTimeZone(appointment.startAt, tz)}
                       <span className="text-slate-400"> · </span>
                       {appointment.customerEmail}
                     </p>
+                    {appointment.assignedStaff?.fullName ? (
+                      <p className="mt-1 text-xs text-slate-500">Staff: {appointment.assignedStaff.fullName}</p>
+                    ) : null}
+                    {appointment.createdViaAiChat && appointment.status === "PENDING" ? (
+                      <p className="mt-1 text-xs font-medium text-sky-800">AI-created · pending clinic confirmation</p>
+                    ) : null}
+                    {appointment.specialRequestStatus === "PENDING" && appointment.specialRequestNote ? (
+                      <p className="mt-2 rounded-md border border-amber-100 bg-amber-50/80 px-2 py-1.5 text-xs text-amber-950">
+                        <span className="font-semibold">Special request: </span>
+                        {appointment.specialRequestNote}
+                      </p>
+                    ) : null}
                     <div className="mt-3 flex flex-wrap gap-2">
                       {appointment.status === "PENDING" && (
                         <>

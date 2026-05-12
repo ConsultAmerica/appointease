@@ -22,7 +22,7 @@ export async function cancelCustomerAppointment(formData: FormData): Promise<voi
   };
 
   const appt = await prisma.appointment.findFirst({ where });
-  if (!appt || appt.status === "CANCELLED") {
+  if (!appt || appt.status === "CANCELLED" || appt.status === "COMPLETED") {
     revalidatePath("/customer");
     return;
   }
