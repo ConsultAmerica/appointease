@@ -2,6 +2,7 @@
 
 import type { Session } from "next-auth";
 import type { ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -85,6 +86,115 @@ function ChevronDownIcon({ className }: { className?: string }) {
   );
 }
 
+/** Closes when clicking outside the menu or pressing Escape. */
+function ProfileDropdown({
+  isHome,
+  menuId,
+  renderTrigger,
+  children,
+}: {
+  isHome: boolean;
+  menuId: string;
+  renderTrigger: (open: boolean) => ReactNode;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+    function onPointerDown(e: PointerEvent) {
+      const el = rootRef.current;
+      if (el && !el.contains(e.target as Node)) setOpen(false);
+    }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
+  const panel = isHome
+    ? "border-white/20 bg-slate-900/95 text-white shadow-xl ring-1 ring-white/10"
+    : "border-slate-200 bg-white text-slate-900 shadow-xl ring-1 ring-slate-200/80";
+
+  return (
+    <div className="relative mr-1" ref={rootRef}>
+      <button
+        type="button"
+        id={`${menuId}-trigger`}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        aria-controls={`${menuId}-menu`}
+        onClick={() => setOpen((v) => !v)}
+        className="rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+      >
+        {renderTrigger(open)}
+      </button>
+      {open ? (
+        <div
+          id={`${menuId}-menu`}
+          role="menu"
+          aria-labelledby={`${menuId}-trigger`}
+          className={`absolute right-0 z-50 mt-2 min-w-[220px] overflow-hidden rounded-xl border py-1 ${panel}`}
+          onClick={() => setOpen(false)}
+        >
+          {children}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function ProfileMenuTrigger({
+  isHome,
+  open,
+  initial,
+  displayName,
+  subtitle,
+  avatarClass,
+}: {
+  isHome: boolean;
+  open: boolean;
+  initial: string;
+  displayName: string;
+  subtitle: string;
+  avatarClass: string;
+}) {
+  return (
+    <span
+      className={`flex cursor-pointer items-center gap-1 rounded-full border py-1 pl-1 pr-2 transition sm:pr-3 ${
+        isHome ? "border-white/25 bg-white/10 hover:bg-white/15" : "border-slate-200 bg-slate-50 hover:bg-slate-100"
+      }`}
+    >
+      <span
+        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white ${avatarClass}`}
+      >
+        {initial}
+      </span>
+      <span className="hidden min-w-0 text-left leading-tight sm:block">
+        <span className={`block max-w-[160px] truncate text-xs font-semibold ${isHome ? "text-white" : "text-slate-900"}`}>
+          {displayName}
+        </span>
+        <span className={`block text-[11px] ${isHome ? "text-teal-100" : "text-slate-500"}`}>{subtitle}</span>
+      </span>
+      <ChevronDownIcon
+        className={`h-4 w-4 shrink-0 opacity-60 transition ${open ? "rotate-180" : ""} ${isHome ? "text-white" : "text-slate-600"}`}
+        aria-hidden
+      />
+    </span>
+  );
+}
+
 function AdminStaffUserMenu({
   isHome,
   displayName,
@@ -96,9 +206,6 @@ function AdminStaffUserMenu({
   initial: string;
   staffRole: "ADMIN" | "STAFF";
 }) {
-  const panel = isHome
-    ? "border-white/20 bg-slate-900/95 text-white shadow-xl ring-1 ring-white/10"
-    : "border-slate-200 bg-white text-slate-900 shadow-xl ring-1 ring-slate-200/80";
   const item = isHome
     ? "text-white/95 hover:bg-white/10"
     : "text-slate-700 hover:bg-slate-50";
@@ -106,71 +213,56 @@ function AdminStaffUserMenu({
   const roleLabel = staffRole === "ADMIN" ? "Administrator" : "Staff";
 
   return (
-    <details className="group relative mr-1">
-      <summary
-        className={`flex cursor-pointer list-none items-center gap-1 rounded-full border py-1 pl-1 pr-2 transition [&::-webkit-details-marker]:hidden sm:pr-3 ${
-          isHome ? "border-white/25 bg-white/10 hover:bg-white/15" : "border-slate-200 bg-slate-50 hover:bg-slate-100"
-        }`}
-      >
-        <span
-          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white ${
-            isHome ? "bg-white/25" : "bg-slate-800"
-          }`}
-        >
-          {initial}
-        </span>
-        <div className="hidden min-w-0 text-left leading-tight sm:block">
-          <p className={`max-w-[160px] truncate text-xs font-semibold ${isHome ? "text-white" : "text-slate-900"}`}>
-            {displayName}
-          </p>
-          <p className={`text-[11px] ${isHome ? "text-teal-100" : "text-slate-500"}`}>{roleLabel}</p>
-        </div>
-        <ChevronDownIcon
-          className={`h-4 w-4 shrink-0 opacity-60 transition group-open:rotate-180 ${isHome ? "text-white" : "text-slate-600"}`}
-          aria-hidden
+    <ProfileDropdown
+      isHome={isHome}
+      menuId="admin-staff-menu"
+      renderTrigger={(open) => (
+        <ProfileMenuTrigger
+          isHome={isHome}
+          open={open}
+          initial={initial}
+          displayName={displayName}
+          subtitle={roleLabel}
+          avatarClass={isHome ? "bg-white/25" : "bg-slate-800"}
         />
-      </summary>
-      <div
-        className={`absolute right-0 z-50 mt-2 min-w-[220px] overflow-hidden rounded-xl py-1 ${panel}`}
-        role="menu"
-      >
-        <div className={`border-b px-4 py-3 sm:hidden ${isHome ? "border-white/15" : "border-slate-100"}`}>
-          <p className="font-semibold">{displayName}</p>
-          <p className={`text-xs ${itemMuted}`}>{roleLabel}</p>
-        </div>
-        <Link href="/admin" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
-          Admin dashboard
-        </Link>
-        <Link href="/staff" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
-          Staff workspace
-        </Link>
-        <Link href="/admin/settings" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
-          Workspace settings
-        </Link>
-        {staffRole === "ADMIN" ? (
-          <Link href="/admin/ai-logs" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
-            AI conversation logs
-          </Link>
-        ) : null}
-        <Link href="/onboarding" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
-          Business setup
-        </Link>
-        <Link href="/book" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
-          Book appointment
-        </Link>
-        <Link href="/chat" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
-          AI chat booking
-        </Link>
-        <button
-          type="button"
-          className={`w-full px-4 py-2.5 text-left text-sm font-medium ${item}`}
-          role="menuitem"
-          onClick={() => signOut({ callbackUrl: "/" })}
-        >
-          Sign out
-        </button>
+      )}
+    >
+      <div className={`border-b px-4 py-3 sm:hidden ${isHome ? "border-white/15" : "border-slate-100"}`}>
+        <p className="font-semibold">{displayName}</p>
+        <p className={`text-xs ${itemMuted}`}>{roleLabel}</p>
       </div>
-    </details>
+      <Link href="/admin" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
+        Admin dashboard
+      </Link>
+      <Link href="/staff" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
+        Staff workspace
+      </Link>
+      <Link href="/admin/settings" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
+        Workspace settings
+      </Link>
+      {staffRole === "ADMIN" ? (
+        <Link href="/admin/ai-logs" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
+          AI conversation logs
+        </Link>
+      ) : null}
+      <Link href="/onboarding" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
+        Business setup
+      </Link>
+      <Link href="/book" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
+        Book appointment
+      </Link>
+      <Link href="/chat" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
+        AI chat booking
+      </Link>
+      <button
+        type="button"
+        className={`w-full px-4 py-2.5 text-left text-sm font-medium ${item}`}
+        role="menuitem"
+        onClick={() => signOut({ callbackUrl: "/" })}
+      >
+        Sign out
+      </button>
+    </ProfileDropdown>
   );
 }
 
@@ -183,66 +275,48 @@ function CustomerUserMenu({
   displayName: string;
   initial: string;
 }) {
-  const panel = isHome
-    ? "border-white/20 bg-slate-900/95 text-white shadow-xl ring-1 ring-white/10"
-    : "border-slate-200 bg-white text-slate-900 shadow-xl ring-1 ring-slate-200/80";
   const item = isHome
     ? "text-white/95 hover:bg-white/10"
     : "text-slate-700 hover:bg-slate-50";
   const itemMuted = isHome ? "text-teal-100" : "text-slate-500";
 
   return (
-    <details className="group relative mr-1">
-      <summary
-        className={`flex cursor-pointer list-none items-center gap-1 rounded-full border py-1 pl-1 pr-2 transition marker:content-none [&::-webkit-details-marker]:hidden sm:pr-3 ${
-          isHome ? "border-white/25 bg-white/10 hover:bg-white/15" : "border-slate-200 bg-slate-50 hover:bg-slate-100"
-        }`}
-      >
-        <span
-          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white ${
-            isHome ? "bg-white/25" : "bg-teal-700"
-          }`}
-        >
-          {initial}
-        </span>
-        <div className="hidden min-w-0 text-left leading-tight sm:block">
-          <p className={`max-w-[140px] truncate text-xs font-semibold ${isHome ? "text-white" : "text-slate-900"}`}>
-            {displayName}
-          </p>
-          <p className={`text-[11px] ${isHome ? "text-teal-100" : "text-slate-500"}`}>Member</p>
-        </div>
-        <ChevronDownIcon
-          className={`h-4 w-4 shrink-0 opacity-60 transition group-open:rotate-180 ${isHome ? "text-white" : "text-slate-600"}`}
-          aria-hidden
+    <ProfileDropdown
+      isHome={isHome}
+      menuId="customer-menu"
+      renderTrigger={(open) => (
+        <ProfileMenuTrigger
+          isHome={isHome}
+          open={open}
+          initial={initial}
+          displayName={displayName}
+          subtitle="Member"
+          avatarClass={isHome ? "bg-white/25" : "bg-teal-700"}
         />
-      </summary>
-      <div
-        className={`absolute right-0 z-50 mt-2 min-w-[220px] overflow-hidden rounded-xl py-1 ${panel}`}
-        role="menu"
-      >
-        <div className={`border-b px-4 py-3 sm:hidden ${isHome ? "border-white/15" : "border-slate-100"}`}>
-          <p className="font-semibold">{displayName}</p>
-          <p className={`text-xs ${itemMuted}`}>Member</p>
-        </div>
-        <Link href="/customer" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
-          My appointments
-        </Link>
-        <Link href="/book" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
-          Book appointment
-        </Link>
-        <Link href="/chat" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
-          AI chat booking
-        </Link>
-        <button
-          type="button"
-          className={`w-full px-4 py-2.5 text-left text-sm font-medium ${item}`}
-          role="menuitem"
-          onClick={() => signOut({ callbackUrl: "/" })}
-        >
-          Sign out
-        </button>
+      )}
+    >
+      <div className={`border-b px-4 py-3 sm:hidden ${isHome ? "border-white/15" : "border-slate-100"}`}>
+        <p className="font-semibold">{displayName}</p>
+        <p className={`text-xs ${itemMuted}`}>Member</p>
       </div>
-    </details>
+      <Link href="/customer" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
+        My appointments
+      </Link>
+      <Link href="/book" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
+        Book appointment
+      </Link>
+      <Link href="/chat" className={`block px-4 py-2.5 text-sm font-medium ${item}`} role="menuitem">
+        AI chat booking
+      </Link>
+      <button
+        type="button"
+        className={`w-full px-4 py-2.5 text-left text-sm font-medium ${item}`}
+        role="menuitem"
+        onClick={() => signOut({ callbackUrl: "/" })}
+      >
+        Sign out
+      </button>
+    </ProfileDropdown>
   );
 }
 

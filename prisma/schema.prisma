@@ -171,6 +171,7 @@ model Appointment {
   assignedStaff          User?             @relation("AppointmentStaff", fields: [assignedStaffUserId], references: [id], onDelete: SetNull)
   customerName           String
   customerEmail          String
+  customerPhone          String?
   startAt                DateTime
   endAt                  DateTime
   status                 AppointmentStatus @default(PENDING)

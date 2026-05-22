@@ -13,6 +13,7 @@ const bookingSchema = z.object({
   serviceId: z.string().min(1),
   customerName: z.string().min(2),
   customerEmail: z.string().email(),
+  customerPhone: z.string().min(7).max(32),
   /** ISO string from slot picker (z.iso.datetime is strict; keep booking resilient). */
   startAt: z.string().min(1),
   specialRequestNote: z.string().max(2000).optional(),
@@ -35,8 +36,16 @@ export async function POST(req: Request) {
 
     const parsedIn = bookingSchema.safeParse(body);
     if (!parsedIn.success) {
-      const details = parsedIn.error.issues.map((i) => i.message).join(" ");
-      return NextResponse.json({ error: "Invalid booking data", details }, { status: 400 });
+      const issues = parsedIn.error.issues;
+      const phoneMissing = issues.some((i) => i.path.join(".") === "customerPhone");
+      const details = issues.map((i) => i.message).join(" ");
+      return NextResponse.json(
+        {
+          error: phoneMissing ? "Phone number is required." : "Invalid booking data",
+          details,
+        },
+        { status: 400 },
+      );
     }
     const parsed = parsedIn.data;
 
@@ -83,12 +92,14 @@ export async function POST(req: Request) {
     }
 
     const note = parsed.specialRequestNote?.trim();
+    const phone = parsed.customerPhone.trim();
     const appointment = await prisma.appointment.create({
       data: {
         businessId: parsed.businessId,
         serviceId: parsed.serviceId,
-        customerName: parsed.customerName,
-        customerEmail: parsed.customerEmail,
+        customerName: parsed.customerName.trim(),
+        customerEmail: parsed.customerEmail.trim().toLowerCase(),
+        customerPhone: phone,
         startAt,
         endAt,
         status: "PENDING",

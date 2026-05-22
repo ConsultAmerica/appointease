@@ -186,6 +186,7 @@ export default function BookPage() {
   const [selectedSlot, setSelectedSlot] = useState("");
   const [nameDraft, setNameDraft] = useState<string | undefined>(undefined);
   const [emailDraft, setEmailDraft] = useState<string | undefined>(undefined);
+  const [phoneDraft, setPhoneDraft] = useState("");
   const [status, setStatus] = useState<string | null>(null);
   const [bookingSuccess, setBookingSuccess] = useState<{ ref: string; email: string } | null>(null);
   const [businessesLoaded, setBusinessesLoaded] = useState(false);
@@ -284,14 +285,20 @@ export default function BookPage() {
   }, [customerBusinessId]);
 
   useEffect(() => {
-    if (sessionStatus === "loading") return;
     pageMountedRef.current = true;
     void loadBusinesses();
     return () => {
       pageMountedRef.current = false;
       businessesFetchRef.current?.abort();
     };
-  }, [loadBusinesses, sessionStatus]);
+  }, [loadBusinesses]);
+
+  /** Prefill contact fields when a signed-in customer opens /book (optional). */
+  useEffect(() => {
+    if (sessionStatus !== "authenticated" || !session?.user) return;
+    if (nameDraft === undefined && session.user.name) setNameDraft(session.user.name);
+    if (emailDraft === undefined && session.user.email) setEmailDraft(session.user.email);
+  }, [sessionStatus, session, nameDraft, emailDraft]);
 
   const services = useMemo(
     () => businesses.find((b) => b.id === businessId)?.services ?? [],
@@ -358,8 +365,9 @@ export default function BookPage() {
     e.preventDefault();
     const customerName = displayName.trim();
     const customerEmail = displayEmail.trim();
-    if (!customerName || !customerEmail) {
-      setStatus("Name and email are required.");
+    const customerPhone = phoneDraft.trim();
+    if (!customerName || !customerEmail || !customerPhone) {
+      setStatus("Name, email, and phone are required.");
       return;
     }
 
@@ -375,6 +383,7 @@ export default function BookPage() {
         serviceId,
         customerName,
         customerEmail,
+        customerPhone,
         startAt: selectedSlot,
         ...(specialRequest.trim() ? { specialRequestNote: specialRequest.trim() } : {}),
       }),
@@ -401,7 +410,6 @@ export default function BookPage() {
   const hideWizardIntro =
     businessesLoaded && !loadError && businesses.length > 0 && Boolean(bookingSuccess);
 
-  const waitingForSession = sessionStatus === "loading";
   const loadingBusinesses = !businessesLoaded && !loadError;
   const canStartWizard =
     businessesLoaded && !loadError && businesses.length > 0 && !bookingSuccess;
@@ -413,12 +421,11 @@ export default function BookPage() {
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Book appointment</h1>
           {canStartWizard ? (
             <p className="mt-1 text-sm text-slate-600">
-              Complete each step. Your request stays <strong>pending</strong> until the business confirms.
+              Book as a guest — no account required. Your request stays <strong>pending</strong> until the business
+              confirms.
             </p>
           ) : loadingBusinesses ? (
-            <p className="mt-1 text-sm text-slate-500">
-              {waitingForSession ? "Checking your session…" : "Loading services and locations…"}
-            </p>
+            <p className="mt-1 text-sm text-slate-500">Loading services and locations…</p>
           ) : null}
         </>
       )}
@@ -434,12 +441,10 @@ export default function BookPage() {
             aria-hidden
           />
           <p className="mt-4 text-sm font-medium text-slate-800">
-            {waitingForSession ? "Checking session…" : "Loading services…"}
+            Loading services…
           </p>
           <p className="mt-1 max-w-sm text-center text-xs text-slate-500">
-            {waitingForSession
-              ? "Hang tight while we confirm whether you’re signed in."
-              : "This should only take a moment. If it keeps spinning, refresh the page or try again in a little while."}
+            This should only take a moment. If it keeps spinning, refresh the page or try again in a little while.
           </p>
         </div>
       )}
@@ -726,6 +731,19 @@ export default function BookPage() {
                     value={displayEmail}
                     onChange={(e) => setEmailDraft(e.target.value)}
                     required
+                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+                  />
+                </label>
+                <label className="block text-sm font-medium text-slate-700">
+                  Phone
+                  <input
+                    name="booking-phone"
+                    type="tel"
+                    autoComplete="tel"
+                    value={phoneDraft}
+                    onChange={(e) => setPhoneDraft(e.target.value)}
+                    required
+                    placeholder="+1 555 123 4567"
                     className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
                   />
                 </label>

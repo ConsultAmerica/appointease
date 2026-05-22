@@ -11,15 +11,12 @@ const DB_QUERY_MS = 12_000;
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  /** Optional — guest booking on `/book` does not require a session. */
   let session: Session | null = null;
   try {
     session = await auth();
   } catch (authErr) {
-    console.error("[api/businesses] auth() failed", authErr);
-    return NextResponse.json(
-      { error: "Session check failed. Try refreshing the page or signing in again.", businesses: [] },
-      { status: 500 },
-    );
+    console.warn("[api/businesses] auth() failed (continuing as guest)", authErr);
   }
 
   try {

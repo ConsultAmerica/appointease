@@ -12,6 +12,7 @@ type Appointment = {
   id: string;
   customerName: string;
   customerEmail: string;
+  customerPhone?: string | null;
   startAt: string;
   status: string;
   createdViaAiChat?: boolean;
@@ -277,10 +278,6 @@ export default function AdminPage() {
             ) : (
               "Manage today’s bookings and weekly trends."
             )}
-          </p>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-600">
-            New booking requests start as <strong className="font-semibold text-slate-800">pending</strong>. Review and
-            confirm or decline them here — customers are notified automatically.
           </p>
           {sessionStatus === "authenticated" && session?.user && (
             <p className="mt-3 text-sm text-slate-600">
@@ -550,6 +547,12 @@ export default function AdminPage() {
                       {formatInTimeZone(appointment.startAt, tz)}
                       <span className="text-slate-400"> · </span>
                       {appointment.customerEmail}
+                      {appointment.customerPhone ? (
+                        <>
+                          <span className="text-slate-400"> · </span>
+                          {appointment.customerPhone}
+                        </>
+                      ) : null}
                     </p>
                     {appointment.assignedStaff?.fullName ? (
                       <p className="mt-1 text-xs text-slate-500">Staff: {appointment.assignedStaff.fullName}</p>
