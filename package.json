@@ -6,11 +6,12 @@
     "dev": "next dev",
     "dev:all": "next dev",
     "dev:lan": "next dev -H 0.0.0.0 -p 3000",
-    "build": "next build",
+    "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "lint": "eslint",
     "db:up": "docker compose up -d",
     "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
     "db:generate": "prisma generate",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio"

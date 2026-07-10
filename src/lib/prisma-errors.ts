@@ -30,10 +30,12 @@ export function describeDatabaseLoadFailure(err: unknown): string {
 
   if (
     code === "P2021" ||
+    code === "P2022" ||
     lower.includes("does not exist") ||
-    lower.includes("relation") && lower.includes("not exist")
+    (lower.includes("column") && lower.includes("does not exist")) ||
+    (lower.includes("relation") && lower.includes("not exist"))
   ) {
-    return "Database tables are missing. From your machine run: npx prisma migrate deploy with DATABASE_URL set to this same database, then reload this page.";
+    return "Database schema is out of date. Run: npx prisma migrate deploy (with production DATABASE_URL), or redeploy after setting DATABASE_URL on Vercel so migrations run at build time.";
   }
 
   if (lower.includes("self signed certificate") || lower.includes("certificate")) {

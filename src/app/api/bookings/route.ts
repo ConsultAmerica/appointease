@@ -4,6 +4,7 @@ import { z } from "zod";
 import { bookingRequestReceivedHtml } from "@/lib/email-templates";
 import { sendEmail } from "@/lib/email";
 import { hasBookableIntervalConflict } from "@/lib/appointment-conflicts";
+import { describeDatabaseLoadFailure } from "@/lib/prisma-errors";
 import { prisma } from "@/lib/prisma";
 import { staffCanPerformService } from "@/lib/staff-for-service";
 import { checkRateLimit } from "@/lib/security";
@@ -139,9 +140,14 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ appointment }, { status: 201 });
   } catch (error) {
+    const msg = error instanceof Error ? error.message : "Unknown error";
+    const schemaStale = msg.includes("customerPhone") || msg.toLowerCase().includes("does not exist");
     return NextResponse.json(
-      { error: "Booking failed", details: error instanceof Error ? error.message : "Unknown error" },
-      { status: 400 },
+      {
+        error: schemaStale ? "Database needs a migration" : "Booking failed",
+        details: schemaStale ? describeDatabaseLoadFailure(error) : msg,
+      },
+      { status: schemaStale ? 503 : 400 },
     );
   }
 }
