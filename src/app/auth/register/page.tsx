@@ -3,6 +3,7 @@
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { signIn, type SignInResponse } from "next-auth/react";
 import { formatAuthApiError, mapCredentialsSignInError, navigateAfterCredentialsSignIn } from "@/lib/auth-client";
+import { SectionBackground } from "@/components/section-background";
 import { getBrowserTimezone, getTimezoneOptions } from "@/lib/timezones";
 
 type Business = { id: string; name: string };
@@ -190,7 +191,7 @@ export default function RegisterPage() {
     role === "CUSTOMER" && (businessListState !== "ready" || businesses.length === 0);
 
   return (
-    <main className="mx-auto w-full max-w-lg flex-1 px-6 py-10">
+    <SectionBackground variant="auth" as="main" className="mx-auto w-full max-w-lg flex-1 px-6 py-10">
       <h1 className="text-2xl font-bold">Create account</h1>
       <p className="mt-2 text-sm text-slate-600">Register as business admin or customer.</p>
 
@@ -338,6 +339,6 @@ export default function RegisterPage() {
           Sign in
         </a>
       </p>
-    </main>
+    </SectionBackground>
   );
 }

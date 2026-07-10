@@ -3,6 +3,7 @@
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { SectionBackground } from "@/components/section-background";
 
 const PRODUCT = "AppointmentAI";
 
@@ -330,7 +331,7 @@ export default function ChatPage() {
     messages.length + (loading ? 1 : 0) > 3 ? "max-h-[min(42vh,380px)]" : "max-h-[min(22vh,200px)]";
 
   return (
-    <main className="bg-background pb-12">
+    <SectionBackground variant="clinic" as="main" className="pb-12">
       <div className="mx-auto max-w-4xl px-6 py-8">
         <div className="mb-6">
           <p className="text-xs font-semibold uppercase tracking-wide text-[color:var(--btn-secondary)]">{PRODUCT}</p>
@@ -454,6 +455,6 @@ export default function ChatPage() {
           </form>
         </div>
       </div>
-    </main>
+    </SectionBackground>
   );
 }

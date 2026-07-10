@@ -3,6 +3,8 @@
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { AppointmentImage } from "@/components/appointment-image";
+import { SectionBackground } from "@/components/section-background";
 import { BookCalendar } from "@/components/booking/book-calendar";
 import { BuildingIcon, CalendarIcon, ClockIcon, SparklesIcon, UserIcon } from "@/components/booking/booking-icons";
 import {
@@ -15,6 +17,7 @@ import {
   localISODate,
 } from "@/components/booking/types";
 import { clinicThemeForIndex, PRO, SLOT_STATUS_STYLES } from "@/lib/clinic-theme";
+import { APPOINTMENT_IMAGES } from "@/lib/appointment-images";
 import { formatAuthApiError } from "@/lib/auth-client";
 
 const ANY_PROVIDER = "__any__";
@@ -296,15 +299,23 @@ export function BookingWizard() {
   const canWizard = loaded && !loadError && clinics.length > 0 && !bookingSuccess;
 
   return (
-    <main className="min-h-screen flex-1 bg-background-subtle px-4 pb-28 pt-8 sm:px-6 sm:pb-10">
+    <SectionBackground variant="calendar" as="main" className="min-h-screen flex-1 px-4 pb-28 pt-8 sm:px-6 sm:pb-10">
       <div className="mx-auto w-full max-w-3xl">
         {!bookingSuccess && (
-          <header className="mb-6 border-b border-slate-200 pb-6">
-            <p className="pro-label">Patient booking</p>
-            <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">Schedule an appointment</h1>
-            <p className="mt-2 text-sm leading-relaxed text-slate-600">
-              Secure guest checkout — no account required. Your request remains pending until the clinic confirms.
-            </p>
+          <header className="mb-6 overflow-hidden rounded-2xl border border-[color:var(--border)] bg-surface shadow-sm">
+            <AppointmentImage
+              {...APPOINTMENT_IMAGES.patientBooking}
+              className="aspect-[3/1] max-h-40 w-full sm:max-h-48"
+              imageClassName="h-full w-full object-cover object-[center_30%]"
+              sizes="(max-width: 768px) 100vw, 768px"
+            />
+            <div className="border-t border-[color:var(--border)] px-5 py-5 sm:px-6">
+              <p className="pro-label">Patient booking</p>
+              <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">Schedule an appointment</h1>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                Secure guest checkout — no account required. Your request remains pending until the clinic confirms.
+              </p>
+            </div>
           </header>
         )}
 
@@ -637,7 +648,7 @@ export function BookingWizard() {
         </div>
       )}
       </div>
-    </main>
+    </SectionBackground>
   );
 }
 

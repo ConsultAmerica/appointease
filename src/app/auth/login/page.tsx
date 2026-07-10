@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { signIn, type SignInResponse } from "next-auth/react";
+import { SectionBackground } from "@/components/section-background";
 import { mapCredentialsSignInError, navigateAfterCredentialsSignIn } from "@/lib/auth-client";
 
 export default function LoginPage() {
@@ -51,7 +52,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-md flex-1 px-6 py-10">
+    <SectionBackground variant="auth" as="main" className="mx-auto w-full max-w-md flex-1 px-6 py-10">
       <h1 className="text-2xl font-bold">Sign in</h1>
       <p className="mt-2 text-sm text-slate-600">Admin and customer login.</p>
       <form onSubmit={onSubmit} className="mt-6 space-y-4 rounded-xl border border-slate-200 bg-surface p-6">
@@ -109,6 +110,6 @@ export default function LoginPage() {
           Resend
         </a>
       </p>
-    </main>
+    </SectionBackground>
   );
 }

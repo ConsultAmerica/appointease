@@ -107,3 +107,58 @@ select {
   text-transform: uppercase;
   color: var(--btn-secondary);
 }
+
+/* Appointment-themed section backgrounds (image + readable overlay) */
+.bg-appointment-clinic {
+  background-color: var(--background);
+  background-image: linear-gradient(
+      135deg,
+      rgb(249 250 251 / 0.94) 0%,
+      rgb(249 250 251 / 0.88) 45%,
+      rgb(243 244 246 / 0.92) 100%
+    ),
+    url("/images/backgrounds/bg-clinic-soft.png");
+  background-size: cover;
+  background-position: center;
+}
+
+.bg-appointment-calendar {
+  background-color: var(--background-subtle);
+  background-image: linear-gradient(
+      rgb(243 244 246 / 0.93),
+      rgb(249 250 251 / 0.9)
+    ),
+    url("/images/backgrounds/bg-calendar-pattern.png");
+  background-size: cover;
+  background-position: center;
+}
+
+.bg-appointment-scheduling {
+  background-color: var(--background);
+  background-image: linear-gradient(
+      rgb(249 250 251 / 0.9),
+      rgb(249 250 251 / 0.96)
+    ),
+    url("/images/hero-appointment-scheduling.png");
+  background-size: cover;
+  background-position: center top;
+}
+
+.bg-appointment-auth {
+  background-color: var(--background);
+  background-image: linear-gradient(
+      rgb(249 250 251 / 0.95),
+      rgb(243 244 246 / 0.92)
+    ),
+    url("/images/backgrounds/bg-clinic-soft.png");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+@media (max-width: 768px) {
+  .bg-appointment-auth {
+    background-attachment: scroll;
+  }
+}
+

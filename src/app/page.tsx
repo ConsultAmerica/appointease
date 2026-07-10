@@ -1,5 +1,8 @@
 import type { ReactNode, SVGProps } from "react";
 import Link from "next/link";
+import { AppointmentImage } from "@/components/appointment-image";
+import { SectionBackground } from "@/components/section-background";
+import { APPOINTMENT_IMAGES } from "@/lib/appointment-images";
 
 const PRODUCT = "AppointmentAI";
 
@@ -70,7 +73,7 @@ export default function Home() {
   return (
     <div className="flex flex-col bg-background">
       {/* Hero */}
-      <section className="border-b border-[color:var(--border)]">
+      <SectionBackground variant="clinic" className="border-b border-[color:var(--border)]">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:gap-16 lg:py-20">
           <div className="space-y-8">
             <p className="pro-label">Enterprise scheduling</p>
@@ -103,12 +106,22 @@ export default function Home() {
               ))}
             </dl>
           </div>
-          <BookingPreview />
+          <div className="relative">
+            <AppointmentImage
+              {...APPOINTMENT_IMAGES.heroScheduling}
+              priority
+              className="pro-card rounded-2xl shadow-md"
+              sizes="(max-width: 1024px) 100vw, 560px"
+            />
+            <div className="relative z-10 -mt-10 mx-2 sm:mx-4 lg:absolute lg:bottom-6 lg:left-6 lg:mt-0 lg:max-w-[17rem] lg:mx-0">
+              <BookingPreview />
+            </div>
+          </div>
         </div>
-      </section>
+      </SectionBackground>
 
       {/* Capabilities */}
-      <section className="py-16 md:py-20">
+      <SectionBackground variant="scheduling" className="py-16 md:py-20">
         <div className="mx-auto max-w-6xl px-6">
           <p className="pro-label">Platform</p>
           <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">Built for clinical operations</h2>
@@ -121,10 +134,10 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </SectionBackground>
 
       {/* Flow */}
-      <section className="border-y border-[color:var(--border)] bg-background-subtle py-16 md:py-20">
+      <SectionBackground variant="calendar" className="border-y border-[color:var(--border)] py-16 md:py-20">
         <div className="mx-auto max-w-6xl px-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
@@ -134,6 +147,14 @@ export default function Home() {
             <Link href="/book" className="text-sm font-semibold text-sky-800 hover:text-sky-900">
               Open booking portal →
             </Link>
+          </div>
+          <div className="mt-10 overflow-hidden rounded-2xl border border-[color:var(--border)] shadow-sm">
+            <AppointmentImage
+              {...APPOINTMENT_IMAGES.calendarOverview}
+              className="aspect-[21/9] max-h-56 w-full bg-surface md:max-h-72"
+              imageClassName="h-full w-full object-cover object-center"
+              sizes="(max-width: 768px) 100vw, 1152px"
+            />
           </div>
           <ol className="mt-12 grid gap-8 md:grid-cols-4">
             {FLOW.map((item) => (
@@ -147,28 +168,37 @@ export default function Home() {
             ))}
           </ol>
         </div>
-      </section>
+      </SectionBackground>
 
       {/* Personas */}
-      <section className="py-16 md:py-20">
+      <SectionBackground variant="clinic" className="py-16 md:py-20">
         <div className="mx-auto max-w-6xl px-6">
-          <h2 className="text-center text-3xl font-semibold text-slate-900">Role-based workspaces</h2>
-          <p className="mx-auto mt-3 max-w-xl text-center text-slate-600">
-            Each user sees only what they need — owners, staff, and patients.
-          </p>
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
-            {PERSONAS.map((p) => (
-              <article key={p.title} className={`pro-card border-l-4 p-6 ${p.accent}`}>
-                <h3 className="text-lg font-semibold text-slate-900">{p.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">{p.desc}</p>
-              </article>
-            ))}
+          <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-start lg:gap-14">
+            <AppointmentImage
+              {...APPOINTMENT_IMAGES.patientBooking}
+              className="pro-card w-full max-w-sm shrink-0 rounded-2xl shadow-md lg:max-w-xs"
+              sizes="(max-width: 1024px) 20rem, 18rem"
+            />
+            <div className="min-w-0 flex-1">
+              <h2 className="text-center text-3xl font-semibold text-slate-900 lg:text-left">Role-based workspaces</h2>
+              <p className="mx-auto mt-3 max-w-xl text-center text-slate-600 lg:mx-0 lg:text-left">
+                Each user sees only what they need — owners, staff, and patients.
+              </p>
+              <div className="mt-10 grid gap-4 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+                {PERSONAS.map((p) => (
+                  <article key={p.title} className={`pro-card border-l-4 p-6 ${p.accent}`}>
+                    <h3 className="text-lg font-semibold text-slate-900">{p.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-slate-600">{p.desc}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-      </section>
+      </SectionBackground>
 
       {/* CTA */}
-      <section className="px-6 pb-16 md:pb-20">
+      <SectionBackground variant="calendar" className="px-6 pb-16 md:pb-20">
         <div className="pro-card mx-auto max-w-6xl bg-[color:var(--btn-primary)] px-8 py-12 text-center md:px-16">
           <h2 className="text-3xl font-semibold text-white">Experience {PRODUCT}</h2>
           <p className="mx-auto mt-4 max-w-lg text-slate-300">
@@ -184,14 +214,14 @@ export default function Home() {
             </Link>
           </div>
         </div>
-      </section>
+      </SectionBackground>
     </div>
   );
 }
 
 function BookingPreview() {
   return (
-    <div className="pro-card overflow-hidden">
+    <div className="pro-card overflow-hidden shadow-lg ring-1 ring-slate-900/5">
       <div className="flex items-center justify-between border-b border-[color:var(--border)] bg-background-subtle px-4 py-2.5">
         <span className="text-xs font-medium text-slate-500">Booking portal</span>
         <span className="rounded bg-slate-200 px-2 py-0.5 font-mono text-[10px] text-slate-600">/book</span>
