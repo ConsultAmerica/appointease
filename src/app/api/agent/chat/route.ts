@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
 import { buildDemoAgentReply } from "@/lib/demo-agent-reply";
+import { demoAgentEnabled, openaiConfigured } from "@/lib/chat-mode";
 import { runDemoBookingFlow } from "@/lib/demo-booking-flow";
 import type { AgentBookingContext } from "@/lib/scheduling-agent";
 import { chatMessagesToAgentInput, createSchedulingAgent } from "@/lib/scheduling-agent";
@@ -20,15 +21,8 @@ const bodySchema = z.object({
     .min(1),
 });
 
-function openaiConfigured() {
-  return Boolean(process.env.OPENAI_API_KEY?.trim());
-}
-
-/** Demo replies without OpenAI: dev by default, or production when ALLOW_DEMO_AGENT=true */
 function useDemoAgentInsteadOfOpenAI() {
-  if (openaiConfigured()) return false;
-  if (process.env.NODE_ENV !== "production") return true;
-  return process.env.ALLOW_DEMO_AGENT === "true";
+  return demoAgentEnabled();
 }
 
 export async function POST(req: Request) {
@@ -70,9 +64,9 @@ export async function POST(req: Request) {
   if (!openaiConfigured() && !useDemoAgentInsteadOfOpenAI()) {
     return NextResponse.json(
       {
-        error: "AI chat is not configured.",
+        error: "AI chat is disabled.",
         details:
-          "Set OPENAI_API_KEY on the server, or set ALLOW_DEMO_AGENT=true for scripted demo replies without OpenAI (not recommended for public production).",
+          "Set OPENAI_API_KEY for live tools, or remove DISABLE_DEMO_AGENT to use scripted demo replies without OpenAI.",
       },
       { status: 503 },
     );

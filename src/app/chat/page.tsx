@@ -205,7 +205,7 @@ export default function ChatPage() {
       setError(null);
 
       try {
-        if (chatMode === "demo") {
+        if (chatMode === "demo" || chatMode === "off") {
           const firstName = session?.user?.name?.trim().split(/\s+/)[0] ?? "there";
           const local = computeClientDemoReply(trimmed, demoBookingState, firstName);
           if (local) {
