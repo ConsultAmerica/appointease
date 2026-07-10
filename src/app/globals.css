@@ -108,6 +108,10 @@ select {
   color: var(--btn-secondary);
 }
 
+.pro-label-on-dark {
+  color: rgb(191 219 254);
+}
+
 /* Appointment-themed section backgrounds (image + readable overlay) */
 .bg-appointment-clinic {
   background-color: var(--background);

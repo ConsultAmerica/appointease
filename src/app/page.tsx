@@ -205,20 +205,69 @@ export default function Home() {
       </SectionBackground>
 
       {/* CTA */}
-      <SectionBackground variant="calendar" className="px-6 pb-16 md:pb-20">
-        <div className="pro-card mx-auto max-w-6xl bg-[color:var(--btn-primary)] px-8 py-12 text-center md:px-16">
-          <h2 className="text-3xl font-semibold text-white">Experience {PRODUCT}</h2>
-          <p className="mx-auto mt-4 max-w-lg text-slate-300">
-            Book a demo appointment as a guest, or sign in to explore the admin dashboard.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link href="/book" className="inline-flex items-center gap-2 rounded-lg bg-surface px-8 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-100">
-              Book as a guest
-              <ArrowRightIcon className="h-4 w-4" />
-            </Link>
-            <Link href="/auth/login" className="pro-btn-secondary inline-flex px-8 py-3 text-sm">
-              Sign in
-            </Link>
+      <SectionBackground variant="clinic" className="px-6 pb-16 md:pb-20">
+        <div className="mx-auto max-w-6xl overflow-hidden rounded-2xl border border-[color:var(--border)] bg-surface shadow-lg">
+          <div className="grid lg:grid-cols-2">
+            <div className="relative aspect-[16/10] min-h-[220px] lg:aspect-auto lg:min-h-[340px]">
+              <AppointmentImage
+                {...APPOINTMENT_IMAGES.heroScheduling}
+                fill
+                className="absolute inset-0 h-full w-full"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[color:var(--btn-secondary)]/80 via-[color:var(--btn-secondary)]/25 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-[color:var(--btn-secondary)]/20 lg:to-[color:var(--btn-secondary)]/70" />
+              <div className="relative flex h-full flex-col justify-end p-6 text-white lg:p-8">
+                <p className="text-xs font-semibold uppercase tracking-widest text-blue-100">Ready to try it?</p>
+                <p className="mt-2 max-w-xs text-sm leading-relaxed text-blue-50">
+                  Guest booking, live slots, and admin tools — all on one platform.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col justify-center bg-gradient-to-br from-[color:var(--btn-primary)] to-[color:var(--btn-secondary)] px-8 py-10 text-center lg:px-12 lg:py-14 lg:text-left">
+              <p className="pro-label text-blue-200">Get started today</p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-white md:text-4xl">
+                Experience {PRODUCT}
+              </h2>
+              <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-blue-100 lg:mx-0">
+                Book a demo appointment as a guest, or sign in to explore the admin dashboard and staff tools.
+              </p>
+
+              <ul className="mx-auto mt-6 flex max-w-md flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-blue-50 lg:mx-0 lg:justify-start">
+                <li className="inline-flex items-center gap-1.5">
+                  <CheckIcon className="h-4 w-4 shrink-0 text-emerald-300" />
+                  No account required
+                </li>
+                <li className="inline-flex items-center gap-1.5">
+                  <CheckIcon className="h-4 w-4 shrink-0 text-emerald-300" />
+                  Live availability
+                </li>
+                <li className="inline-flex items-center gap-1.5">
+                  <CheckIcon className="h-4 w-4 shrink-0 text-emerald-300" />
+                  Demo clinics included
+                </li>
+              </ul>
+
+              <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
+                <Link
+                  href="/book"
+                  className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-3 text-sm font-semibold text-[color:var(--btn-secondary)] shadow-md transition hover:bg-blue-50"
+                >
+                  Book as a guest
+                  <ArrowRightIcon className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/auth/login"
+                  className="inline-flex items-center rounded-lg border-2 border-white/40 px-8 py-3 text-sm font-semibold text-white transition hover:border-white hover:bg-white/10"
+                >
+                  Sign in
+                </Link>
+              </div>
+
+              <p className="mt-6 text-xs text-blue-200/90">
+                Demo admin: <span className="font-mono text-blue-100">admin@demo-clinic.com</span>
+              </p>
+            </div>
           </div>
         </div>
       </SectionBackground>
@@ -304,6 +353,14 @@ function BentoCard({
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
       />
     </article>
+  );
+}
+
+function CheckIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" {...props}>
+      <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
 
