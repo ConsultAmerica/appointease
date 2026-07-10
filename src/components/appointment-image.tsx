@@ -7,6 +7,7 @@ type AppointmentImageProps = {
   width: number;
   height: number;
   priority?: boolean;
+  fill?: boolean;
   className?: string;
   imageClassName?: string;
   sizes?: string;
@@ -18,21 +19,23 @@ export function AppointmentImage({
   width,
   height,
   priority = false,
+  fill = false,
   className = "",
-  imageClassName = "h-full w-full object-cover",
+  imageClassName = "object-cover",
   sizes = "(max-width: 768px) 100vw, 50vw",
   children,
 }: AppointmentImageProps) {
   return (
-    <div className={`overflow-hidden ${className}`}>
+    <div className={`overflow-hidden ${fill ? "relative" : ""} ${className}`}>
       <Image
         src={src}
         alt={alt}
-        width={width}
-        height={height}
+        width={fill ? undefined : width}
+        height={fill ? undefined : height}
+        fill={fill}
         priority={priority}
         sizes={sizes}
-        className={imageClassName}
+        className={fill ? `h-full w-full ${imageClassName}` : `h-auto w-full ${imageClassName}`}
       />
       {children}
     </div>

@@ -11,8 +11,10 @@ const CAPABILITIES = [
     title: "Multi-clinic tenants",
     description: "Each business runs its own services, staff, hours, and appointment queue.",
     icon: UsersIcon,
-    span: "lg:col-span-2 lg:row-span-2",
+    span: "sm:col-span-2",
     iconTint: "bg-slate-100 text-slate-700",
+    image: "heroScheduling" as const,
+    imageTall: true,
   },
   {
     title: "Live availability",
@@ -20,6 +22,7 @@ const CAPABILITIES = [
     icon: CalendarIcon,
     span: "",
     iconTint: "bg-emerald-50 text-[color:var(--success)]",
+    image: "calendarOverview" as const,
   },
   {
     title: "Guest-first /book",
@@ -27,6 +30,7 @@ const CAPABILITIES = [
     icon: SparklesIcon,
     span: "",
     iconTint: "bg-sky-50 text-sky-800",
+    image: "patientBooking" as const,
   },
   {
     title: "AI chat (optional)",
@@ -34,13 +38,16 @@ const CAPABILITIES = [
     icon: BoltIcon,
     span: "",
     iconTint: "bg-slate-100 text-slate-700",
+    image: "patientBooking" as const,
   },
   {
     title: "Admin operations",
     description: "Today's schedule, analytics, services, staff, and AI logs.",
     icon: ChartIcon,
-    span: "lg:col-span-2",
+    span: "sm:col-span-2",
     iconTint: "bg-slate-100 text-slate-700",
+    image: "calendarOverview" as const,
+    imageTall: true,
   },
 ] as const;
 
@@ -121,14 +128,14 @@ export default function Home() {
       </SectionBackground>
 
       {/* Capabilities */}
-      <SectionBackground variant="scheduling" className="py-16 md:py-20">
+      <SectionBackground variant="calendar" className="py-16 md:py-20">
         <div className="mx-auto max-w-6xl px-6">
           <p className="pro-label">Platform</p>
           <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">Built for clinical operations</h2>
           <p className="mt-3 max-w-2xl text-slate-600">
             Structured scheduling tools for wellness clinics, medical practices, and service businesses.
           </p>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2">
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {CAPABILITIES.map((cap) => (
               <BentoCard key={cap.title} {...cap} />
             ))}
@@ -268,20 +275,34 @@ function BentoCard({
   icon: Icon,
   span,
   iconTint,
+  image,
+  imageTall = false,
 }: {
   title: string;
   description: string;
   icon: (props: SVGProps<SVGSVGElement>) => ReactNode;
   span: string;
   iconTint: string;
+  image: keyof typeof APPOINTMENT_IMAGES;
+  imageTall?: boolean;
 }) {
+  const img = APPOINTMENT_IMAGES[image];
+
   return (
-    <article className={`pro-card p-5 transition hover:border-slate-300 ${span}`}>
-      <div className={`inline-flex rounded-md p-2 ${iconTint}`}>
-        <Icon className="h-5 w-5" />
+    <article className={`pro-card flex flex-col overflow-hidden p-0 transition hover:border-slate-300 ${span}`}>
+      <div className="p-5">
+        <div className={`inline-flex rounded-md p-2 ${iconTint}`}>
+          <Icon className="h-5 w-5" />
+        </div>
+        <h3 className="mt-3 font-semibold text-slate-900">{title}</h3>
+        <p className="mt-2 text-sm leading-relaxed text-slate-600">{description}</p>
       </div>
-      <h3 className="mt-3 font-semibold text-slate-900">{title}</h3>
-      <p className="mt-2 text-sm leading-relaxed text-slate-600">{description}</p>
+      <AppointmentImage
+        {...img}
+        fill
+        className={`mt-auto w-full border-t border-[color:var(--border)] ${imageTall ? "aspect-[16/9]" : "aspect-[16/10]"}`}
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+      />
     </article>
   );
 }
