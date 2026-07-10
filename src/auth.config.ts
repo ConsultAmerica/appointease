@@ -1,7 +1,7 @@
 import type { NextAuthConfig } from "next-auth";
 
 /**
- * Edge-safe auth options (no Prisma / bcrypt / DB). Used by `proxy.ts` middleware only.
+ * Edge-safe auth options (no Prisma / bcrypt / DB). Used by `proxy.ts` (Next.js 16 edge auth).
  * Full credentials + DB live in `auth.ts` for API routes and `authorize`.
  */
 export default {
