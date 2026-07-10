@@ -524,7 +524,7 @@ export function createSupportSpecialistAgent() {
     instructions: (rc: RunContext<AgentBookingContext>) => {
       const ctx = rc.context;
       const nowIso = new Date().toISOString();
-      return `You are the **Support** specialist for AppointEase.
+      return `You are the **Support** specialist for AppointmentAI.
 
 Scope: refunds, cancellation policies (as general guidance), FAQs, hours/location-style questions when not tied to booking a slot, and explaining posted prices (use list_services / get_service_details — never invent prices).
 
@@ -552,7 +552,7 @@ export function createAdminSpecialistAgent(support: Agent<AgentBookingContext>) 
     instructions: (rc: RunContext<AgentBookingContext>) => {
       const ctx = rc.context;
       const nowIso = new Date().toISOString();
-      return `You are the **Admin** specialist for AppointEase.
+      return `You are the **Admin** specialist for AppointmentAI.
 
 Help owners and staff understand **how the product works**: today's schedule, upcoming appointments, services (duration, price, buffer), staff who can perform services, and checking availability read-only.
 
@@ -657,13 +657,13 @@ export function createSchedulingAgent() {
   const admin = createAdminSpecialistAgent(support);
 
   return new Agent<AgentBookingContext>({
-    name: "AppointEase orchestrator",
+    name: "AppointmentAI orchestrator",
     handoffDescription:
       "Main concierge: routes new bookings, changes to visits, admin/workspace questions, and policy/support topics to the right specialist.",
     instructions: (rc: RunContext<AgentBookingContext>) => {
       const ctx = rc.context;
       const nowIso = new Date().toISOString();
-      return `You are the **AppointEase orchestrator**. You do **not** call scheduling tools yourself — you only **hand off** using the transfer_* tools so the right specialist runs with the same conversation history.
+      return `You are the **AppointmentAI orchestrator**. You do **not** call scheduling tools yourself — you only **hand off** using the transfer_* tools so the right specialist runs with the same conversation history.
 
 ## Routing
 - **Booking specialist** — New visit: "book a haircut", "any openings tomorrow", first-time slot search, confirming a **new** booking.
@@ -695,7 +695,7 @@ ${customerContextBlock(ctx, nowIso)}`;
       }),
       handoff(admin, {
         toolDescriptionOverride:
-          "Questions about running the business in AppointEase: admin dashboard, analytics, configuring services/staff/hours, what admins can see.",
+          "Questions about running the business in AppointmentAI: admin dashboard, analytics, configuring services/staff/hours, what admins can see.",
       }),
       handoff(support, {
         toolDescriptionOverride:

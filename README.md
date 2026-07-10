@@ -1,7 +1,8 @@
 # AppointmentAI
 
-Starter codebase for an appointment-scheduling app inspired by:
-- [AppointEase – Smart Appointment Scheduling](https://appointmentv1.vercel.app/) (reference UI)
+Multi-clinic appointment scheduling built with Next.js, Prisma, and PostgreSQL.
+
+This project started from a UI reference ([AppointEase demo](https://appointmentv1.vercel.app/)) but **AppointmentAI is a separate product**: guest `/book`, multi-tenant clinics, role-based admin/staff, and optional AI chat on the same booking APIs.
 
 ## Included in this starter
 

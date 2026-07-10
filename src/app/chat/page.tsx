@@ -4,6 +4,8 @@ import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
+const PRODUCT = "AppointmentAI";
+
 import {
   computeClientDemoReply,
   initialClientDemoBookingState,
@@ -331,7 +333,7 @@ export default function ChatPage() {
     <main className="bg-slate-50 pb-12">
       <div className="mx-auto max-w-4xl px-6 py-8">
         <div className="mb-6">
-          <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">AppointEase</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">{PRODUCT}</p>
           <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">AI Booking Assistant</h1>
           <p className="mt-1.5 text-lg font-medium text-slate-700 sm:text-xl">{displayBusiness}</p>
           {chatMode === "off" ? (

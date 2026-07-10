@@ -19,8 +19,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AppointmentAI",
-  description: "Smart appointment scheduling with Next.js and Prisma",
+  title: "AppointmentAI — Multi-clinic scheduling",
+  description: "Guest booking, admin dashboards, and optional AI — built on Next.js and PostgreSQL.",
 };
 
 export default async function RootLayout({
