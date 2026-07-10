@@ -86,11 +86,11 @@ function SampleConversation() {
             key={i}
             className={
               m.role === "user"
-                ? "ml-auto max-w-[75%] rounded-lg rounded-br-sm bg-teal-600 px-2.5 py-1.5 text-[11px] leading-snug text-white"
-                : "mr-auto max-w-[75%] rounded-lg rounded-bl-sm border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] leading-snug text-slate-700"
+                ? "ml-auto max-w-[75%] rounded-lg rounded-br-sm bg-[color:var(--btn-primary)] px-2.5 py-1.5 text-[11px] leading-snug text-white"
+                : "mr-auto max-w-[75%] rounded-lg rounded-bl-sm border border-slate-200 bg-surface px-2.5 py-1.5 text-[11px] leading-snug text-slate-700"
             }
           >
-            <span className={m.role === "user" ? "font-semibold text-teal-100" : "font-semibold text-slate-500"}>
+            <span className={m.role === "user" ? "font-semibold text-blue-100" : "font-semibold text-slate-500"}>
               {m.role === "user" ? "You" : "AI"} ·{" "}
             </span>
             <span className="whitespace-pre-wrap">{m.content}</span>
@@ -330,16 +330,16 @@ export default function ChatPage() {
     messages.length + (loading ? 1 : 0) > 3 ? "max-h-[min(42vh,380px)]" : "max-h-[min(22vh,200px)]";
 
   return (
-    <main className="bg-slate-50 pb-12">
+    <main className="bg-background pb-12">
       <div className="mx-auto max-w-4xl px-6 py-8">
         <div className="mb-6">
-          <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">{PRODUCT}</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-[color:var(--btn-secondary)]">{PRODUCT}</p>
           <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">AI Booking Assistant</h1>
           <p className="mt-1.5 text-lg font-medium text-slate-700 sm:text-xl">{displayBusiness}</p>
           {chatMode === "off" ? (
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-600">
               AI chat is off here (no OpenAI key in production). Use{" "}
-              <Link href="/book" className="font-medium text-teal-700 underline-offset-2 hover:underline">
+              <Link href="/book" className="font-medium text-[color:var(--btn-secondary)] underline-offset-2 hover:underline">
                 /book
               </Link>{" "}
               for database-backed booking, or ask your administrator to enable the agent.
@@ -367,7 +367,7 @@ export default function ChatPage() {
               <p className="text-sm text-slate-600">Already booked? Sign in to manage your appointments.</p>
               <a
                 href="/auth/login"
-                className="inline-flex shrink-0 items-center rounded-lg border border-teal-700 bg-teal-50 px-3 py-1.5 text-sm font-semibold text-teal-800 transition hover:bg-teal-100"
+                className="inline-flex shrink-0 items-center rounded-lg border border-[color:var(--btn-secondary)] bg-blue-50 px-3 py-1.5 text-sm font-semibold text-[color:var(--btn-secondary)] transition hover:bg-blue-100"
               >
                 Sign in
               </a>
@@ -375,7 +375,7 @@ export default function ChatPage() {
           )}
           <p className="mt-3 text-sm text-slate-600">
             Prefer a form? Use the{" "}
-            <Link href="/book" className="font-medium text-teal-700 underline-offset-2 hover:underline">
+            <Link href="/book" className="font-medium text-[color:var(--btn-secondary)] underline-offset-2 hover:underline">
               step-by-step booking
             </Link>{" "}
             flow.
@@ -389,7 +389,7 @@ export default function ChatPage() {
               type="button"
               disabled={loading}
               onClick={() => void runSend(q)}
-              className="max-w-full rounded-full border border-slate-200 bg-white px-3 py-1.5 text-left text-xs font-medium text-slate-700 shadow-sm transition hover:border-teal-300 hover:bg-teal-50 disabled:opacity-50 sm:max-w-[min(100%,20rem)]"
+              className="max-w-full rounded-full border border-slate-200 bg-surface px-3 py-1.5 text-left text-xs font-medium text-slate-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 disabled:opacity-50 sm:max-w-[min(100%,20rem)]"
             >
               {q}
             </button>
@@ -398,7 +398,7 @@ export default function ChatPage() {
 
         <SampleConversation />
 
-        <div className="mt-8 flex min-h-0 flex-col rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="mt-8 flex min-h-0 flex-col rounded-2xl border border-slate-200 bg-surface shadow-sm">
           {error ? (
             <div
               className="border-b border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900"
@@ -417,7 +417,7 @@ export default function ChatPage() {
                 key={i}
                 className={
                   m.role === "user"
-                    ? "ml-auto max-w-[75%] rounded-2xl bg-teal-600 px-4 py-3 text-sm text-white"
+                    ? "ml-auto max-w-[75%] rounded-2xl bg-[color:var(--btn-primary)] px-4 py-3 text-sm text-white"
                     : "mr-auto max-w-[75%] rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800"
                 }
               >
@@ -439,14 +439,14 @@ export default function ChatPage() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder='Try: "Book a wellness consultation tomorrow afternoon"'
-                className="min-w-0 flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-900 outline-none ring-teal-600/20 placeholder:text-slate-400 focus:border-teal-600 focus:ring-2"
+                className="min-w-0 flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-900 outline-none ring-blue-600/20 placeholder:text-slate-400 focus:border-[color:var(--btn-primary)] focus:ring-2"
                 disabled={loading}
                 autoComplete="off"
               />
               <button
                 type="submit"
                 disabled={loading || !input.trim()}
-                className="shrink-0 rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50"
+                className="pro-btn-primary shrink-0 px-4 py-2.5 text-sm disabled:cursor-not-allowed"
               >
                 Send
               </button>

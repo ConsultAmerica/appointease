@@ -25,7 +25,7 @@ export default function ResetPasswordPage() {
   return (
     <main className="mx-auto w-full max-w-md flex-1 px-6 py-10">
       <h1 className="text-2xl font-bold">Reset password</h1>
-      <form onSubmit={onSubmit} className="mt-6 space-y-4 rounded-xl border border-slate-200 bg-white p-6">
+      <form onSubmit={onSubmit} className="mt-6 space-y-4 rounded-xl border border-slate-200 bg-surface p-6">
         <label className="block text-sm">
           New password
           <input
@@ -37,7 +37,7 @@ export default function ResetPasswordPage() {
             className="mt-1 w-full rounded border border-slate-300 px-3 py-2"
           />
         </label>
-        <button className="rounded bg-slate-900 px-4 py-2 text-white" disabled={!token}>
+        <button className="pro-btn-primary px-4 py-2" disabled={!token}>
           Update password
         </button>
       </form>

@@ -2,17 +2,17 @@ import Link from "next/link";
 
 const tones = {
   banner: {
-    link: "font-medium text-teal-900 underline underline-offset-2",
-    code: "rounded bg-teal-100 px-1 py-0.5 text-xs",
+    link: "font-medium text-[color:var(--btn-secondary)] underline underline-offset-2",
+    code: "rounded bg-blue-100 px-1 py-0.5 text-xs",
   },
   page: {
-    link: "font-medium text-teal-700 underline-offset-2 hover:underline",
+    link: "font-medium text-[color:var(--btn-secondary)] underline-offset-2 hover:underline",
     code: "rounded bg-slate-100 px-1 py-0.5 text-xs",
   },
   /** Admin-only strip: neutral, small type. */
   admin: {
     link: "font-medium text-slate-800 underline underline-offset-2 hover:text-slate-950",
-    code: "rounded border border-slate-200 bg-white px-1 py-0.5 font-mono text-[10px] text-slate-800",
+    code: "rounded border border-slate-200 bg-surface px-1 py-0.5 font-mono text-[10px] text-slate-800",
   },
 } as const;
 

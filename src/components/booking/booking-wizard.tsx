@@ -14,7 +14,7 @@ import {
   formatPrice,
   localISODate,
 } from "@/components/booking/types";
-import { clinicThemeForIndex, SLOT_STATUS_STYLES } from "@/lib/clinic-theme";
+import { clinicThemeForIndex, PRO, SLOT_STATUS_STYLES } from "@/lib/clinic-theme";
 import { formatAuthApiError } from "@/lib/auth-client";
 
 const ANY_PROVIDER = "__any__";
@@ -296,19 +296,21 @@ export function BookingWizard() {
   const canWizard = loaded && !loadError && clinics.length > 0 && !bookingSuccess;
 
   return (
-    <main className="mx-auto w-full max-w-4xl flex-1 px-4 pb-28 pt-8 sm:px-6 sm:pb-8">
-      {!bookingSuccess && (
-        <>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Book appointment</h1>
-          <p className="mt-1 text-sm text-slate-600">
-            Guided booking — no account required. Requests stay <strong>pending</strong> until confirmed.
-          </p>
-        </>
-      )}
+    <main className="min-h-screen flex-1 bg-background-subtle px-4 pb-28 pt-8 sm:px-6 sm:pb-10">
+      <div className="mx-auto w-full max-w-3xl">
+        {!bookingSuccess && (
+          <header className="mb-6 border-b border-slate-200 pb-6">
+            <p className="pro-label">Patient booking</p>
+            <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">Schedule an appointment</h1>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600">
+              Secure guest checkout — no account required. Your request remains pending until the clinic confirms.
+            </p>
+          </header>
+        )}
 
       {loading && (
-        <div className="mt-10 flex flex-col items-center rounded-2xl border border-slate-200 bg-white py-14" role="status">
-          <div className="h-10 w-10 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+        <div className="mt-10 flex flex-col items-center rounded-lg border border-slate-200 bg-surface py-14" role="status">
+          <div className="h-10 w-10 animate-spin rounded-full border-2 border-slate-900 border-t-transparent" />
           <p className="mt-4 text-sm font-medium text-slate-800">Loading clinics…</p>
         </div>
       )}
@@ -328,7 +330,7 @@ export function BookingWizard() {
       )}
 
       {bookingSuccess && (
-        <section className="rounded-2xl border border-emerald-200 bg-white p-6 shadow-sm">
+        <section className="pro-card p-6">
           <h2 className="text-xl font-bold text-slate-900">Booking request sent</h2>
           <p className="mt-3 text-sm text-slate-700">
             Reference <span className="font-mono font-medium">{bookingSuccess.ref}</span>… — pending until confirmed.
@@ -349,13 +351,13 @@ export function BookingWizard() {
       )}
 
       {canWizard && (
-        <>
+        <div className={`${PRO.card} p-5 sm:p-8`}>
           <StepIndicator step={step} />
 
           {step === 1 && (
             <section>
-              <h2 className="text-lg font-semibold text-slate-900">Select a clinic</h2>
-              <p className="mt-1 text-sm text-slate-500">Color-coded locations — hours and availability shown upfront.</p>
+              <h2 className={PRO.heading}>Select a clinic</h2>
+              <p className={PRO.subtext}>Compare locations, hours, and availability before continuing.</p>
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 {clinicOptions.map((c) => {
                   const t = clinicThemeForIndex(c.colorIndex);
@@ -365,8 +367,8 @@ export function BookingWizard() {
                       key={c.id}
                       type="button"
                       onClick={() => selectClinic(c.id)}
-                      className={`rounded-2xl border-l-4 bg-white p-5 text-left shadow-sm transition hover:shadow-md ${t.border} ${
-                        selected ? `ring-2 ${t.ring}` : "border-slate-200"
+                      className={`rounded-lg border bg-surface p-5 text-left transition hover:border-slate-300 hover:shadow-sm border-l-4 ${t.border} ${
+                        selected ? "border-slate-900 ring-1 ring-slate-900/10" : "border-slate-200"
                       }`}
                     >
                       <div className="flex items-start gap-3">
@@ -397,19 +399,17 @@ export function BookingWizard() {
 
           {step === 2 && clinic && (
             <section>
-              <div className={`mb-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold text-white ${theme.accent}`}>
+              <div className={`mb-4 inline-flex items-center gap-2 rounded-md px-3 py-1 text-xs font-semibold text-white ${theme.accent}`}>
                 {clinic.name}
               </div>
-              <h2 className="text-lg font-semibold text-slate-900">Select provider & visit type</h2>
-              <p className="mt-1 text-sm text-slate-500">Filter by specialty, or choose the earliest available provider.</p>
+              <h2 className={PRO.heading}>Select provider & visit type</h2>
+              <p className={PRO.subtext}>Filter by specialty or choose the earliest available clinician.</p>
 
               <div className="mt-4 flex flex-wrap gap-2">
                 <button
                   type="button"
                   onClick={() => setSpecialtyFilter("")}
-                  className={`rounded-full px-3 py-1.5 text-xs font-medium ${
-                    !specialtyFilter ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-700"
-                  }`}
+                  className={!specialtyFilter ? PRO.chipActive : PRO.chip}
                 >
                   All specialties
                 </button>
@@ -421,9 +421,7 @@ export function BookingWizard() {
                       setSpecialtyFilter(s.id);
                       setServiceId(s.id);
                     }}
-                    className={`rounded-full px-3 py-1.5 text-xs font-medium ${
-                      specialtyFilter === s.id ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-700"
-                    }`}
+                    className={specialtyFilter === s.id ? PRO.chipActive : PRO.chip}
                   >
                     {s.name}
                   </button>
@@ -434,11 +432,11 @@ export function BookingWizard() {
                 <button
                   type="button"
                   onClick={() => selectProvider(ANY_PROVIDER)}
-                  className={`flex w-full items-center gap-4 rounded-2xl border-2 p-4 text-left ${
-                    staffUserId === ANY_PROVIDER ? "border-blue-600 bg-blue-50" : "border-slate-200 bg-white"
+                  className={`flex w-full items-center gap-4 p-4 text-left ${
+                    staffUserId === ANY_PROVIDER ? PRO.cardSelected : PRO.card
                   }`}
                 >
-                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-700">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-md bg-slate-100 text-slate-700">
                     <SparklesIcon className="h-5 w-5" />
                   </span>
                   <div>
@@ -460,18 +458,18 @@ export function BookingWizard() {
                         key={p.id}
                         type="button"
                         onClick={() => selectProvider(p.id, svc?.id)}
-                        className={`flex w-full items-center gap-4 rounded-2xl border-2 p-4 text-left ${
-                          selected ? "border-blue-600 bg-blue-50" : "border-slate-200 bg-white"
+                        className={`flex w-full items-center gap-4 p-4 text-left ${
+                          selected ? PRO.cardSelected : PRO.card
                         }`}
                       >
-                        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-800 text-sm font-bold text-white">
+                        <span className="flex h-11 w-11 items-center justify-center rounded-md bg-slate-800 text-sm font-semibold text-white">
                           {p.fullName.slice(0, 1)}
                         </span>
                         <div className="min-w-0 flex-1">
                           <p className="font-semibold text-slate-900">{p.fullName}</p>
                           <p className="text-sm text-slate-500">{p.specialty}</p>
                           {p.nextAvailable ? (
-                            <p className="mt-1 text-xs font-medium text-emerald-700">
+                            <p className="mt-1 text-xs font-medium text-[color:var(--success)]">
                               Next: {p.nextAvailable.label} · {p.nextAvailable.date}
                             </p>
                           ) : (
@@ -497,20 +495,20 @@ export function BookingWizard() {
             <section>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-lg font-semibold text-slate-900">Choose date & time</h2>
+                  <h2 className={PRO.heading}>Choose date & time</h2>
                   <p className="mt-1 text-sm text-slate-500">
-                    <span className="inline-flex items-center gap-1 text-emerald-700">● Available</span>
+                    <span className="inline-flex items-center gap-1 text-[color:var(--success)]">● Available</span>
                     <span className="mx-2 text-slate-300">|</span>
-                    <span className="inline-flex items-center gap-1 text-amber-700">● Limited</span>
+                    <span className="inline-flex items-center gap-1 text-[color:var(--warning)]">● Limited</span>
                     <span className="mx-2 text-slate-300">|</span>
-                    <span className="text-slate-400">○ Unavailable</span>
+                    <span className="text-[color:var(--error)]">○ Unavailable</span>
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => void runSmartSuggest()}
                   disabled={suggesting}
-                  className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
+                  className={`inline-flex items-center gap-2 ${PRO.btn} disabled:opacity-60`}
                 >
                   <SparklesIcon className="h-4 w-4" />
                   {suggesting ? "Finding…" : "Smart Suggest"}
@@ -518,7 +516,7 @@ export function BookingWizard() {
               </div>
 
               {syncing && (
-                <p className="mt-3 text-xs font-medium text-blue-600" role="status">
+                <p className="mt-3 text-xs font-medium text-sky-800" role="status">
                   Syncing live availability…
                 </p>
               )}
@@ -540,7 +538,7 @@ export function BookingWizard() {
                             key={slot.iso}
                             type="button"
                             onClick={() => setSelectedSlot(slot.iso)}
-                            className={`rounded-xl border-2 px-3 py-3 text-sm font-semibold transition ${
+                            className={`rounded-md border px-3 py-3 text-sm font-medium transition ${
                               selected ? styles.selected : styles.base
                             }`}
                           >
@@ -557,7 +555,7 @@ export function BookingWizard() {
 
           {step === 4 && clinic && selectedService && (
             <section>
-              <h2 className="text-lg font-semibold text-slate-900">Confirm your visit</h2>
+              <h2 className={PRO.heading}>Confirm your visit</h2>
               <AppointmentSummary
                 clinicName={clinic.name}
                 providerName={
@@ -575,7 +573,7 @@ export function BookingWizard() {
                     value={displayName}
                     onChange={(e) => setNameDraft(e.target.value)}
                     required
-                    className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2.5"
+                    className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2.5 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
                   />
                 </label>
                 <label className="block text-sm font-medium text-slate-700">
@@ -585,7 +583,7 @@ export function BookingWizard() {
                     value={displayEmail}
                     onChange={(e) => setEmailDraft(e.target.value)}
                     required
-                    className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2.5"
+                    className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2.5 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
                   />
                 </label>
                 <label className="block text-sm font-medium text-slate-700">
@@ -596,7 +594,7 @@ export function BookingWizard() {
                     onChange={(e) => setPhoneDraft(e.target.value)}
                     required
                     placeholder="+1 555 123 4567"
-                    className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2.5"
+                    className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2.5 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
                   />
                 </label>
                 <label className="block text-sm font-medium text-slate-700">
@@ -605,12 +603,12 @@ export function BookingWizard() {
                     value={specialRequest}
                     onChange={(e) => setSpecialRequest(e.target.value)}
                     rows={2}
-                    className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2.5"
+                    className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2.5 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
                   />
                 </label>
                 <button
                   type="submit"
-                  className="w-full rounded-xl bg-blue-600 py-3.5 text-sm font-semibold text-white hover:bg-blue-700 sm:w-auto sm:px-10"
+                  className={`w-full sm:w-auto sm:px-10 ${PRO.btn}`}
                 >
                   Submit booking request
                 </button>
@@ -626,9 +624,9 @@ export function BookingWizard() {
 
           {status && (
             <p
-              className={`mt-4 rounded-xl p-3 text-sm ${
+              className={`mt-4 rounded-lg p-3 text-sm ${
                 status.startsWith("Sending") || status.startsWith("Smart suggest")
-                  ? "bg-blue-50 text-blue-900"
+                  ? "bg-sky-50 text-sky-900"
                   : "border border-rose-200 bg-rose-50 text-rose-900"
               }`}
               role="status"
@@ -636,8 +634,9 @@ export function BookingWizard() {
               {status}
             </p>
           )}
-        </>
+        </div>
       )}
+      </div>
     </main>
   );
 }
@@ -658,9 +657,9 @@ function AppointmentSummary({
   slotIso: string;
 }) {
   return (
-    <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-100 bg-slate-50 px-5 py-3">
-        <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Appointment summary</p>
+    <div className="mt-4 overflow-hidden rounded-lg border border-slate-200 bg-surface">
+      <div className="border-b border-slate-200 bg-slate-50 px-5 py-3">
+        <p className="pro-label">Appointment summary</p>
       </div>
       <dl className="divide-y divide-slate-100 px-5 py-2 text-sm">
         {[
@@ -703,17 +702,17 @@ function StepIndicator({ step }: { step: number }) {
               <div className="flex flex-col items-center">
                 <div
                   className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold ${
-                    current ? "bg-blue-600 text-white ring-4 ring-blue-100" : done ? "bg-emerald-500 text-white" : "bg-slate-200 text-slate-500"
+                    current ? PRO.stepActive : done ? PRO.stepDone : PRO.stepIdle
                   }`}
                 >
                   {done ? "✓" : n}
                 </div>
-                <span className={`mt-1 hidden text-[10px] font-semibold sm:block ${current ? "text-blue-700" : "text-slate-500"}`}>
+                <span className={`mt-1 hidden text-[10px] font-semibold sm:block ${current ? "text-slate-900" : "text-slate-500"}`}>
                   {label}
                 </span>
               </div>
               {i < BOOKING_STEPS.length - 1 && (
-                <div className={`mx-1 h-0.5 flex-1 ${done ? "bg-emerald-400" : "bg-slate-200"}`} aria-hidden />
+                <div className={`mx-1 h-0.5 flex-1 ${done ? "bg-emerald-600" : "bg-slate-200"}`} aria-hidden />
               )}
             </li>
           );
@@ -737,13 +736,13 @@ function WizardNav({
   showNext: boolean;
 }) {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur-md sm:static sm:mt-10 sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none">
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-surface/95 px-4 py-3 backdrop-blur-md sm:static sm:mt-10 sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none">
       <div className="mx-auto flex max-w-4xl items-center justify-between gap-3">
         <button
           type="button"
           onClick={onBack}
           disabled={step <= 1}
-          className="min-h-11 rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-medium disabled:opacity-40"
+          className={`min-h-11 ${PRO.btnOutline}`}
         >
           Back
         </button>
@@ -752,7 +751,7 @@ function WizardNav({
             type="button"
             onClick={onNext}
             disabled={nextDisabled}
-            className="min-h-11 flex-1 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 sm:flex-none"
+            className={`min-h-11 flex-1 sm:flex-none ${PRO.btn}`}
           >
             Continue
           </button>

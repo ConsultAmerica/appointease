@@ -71,14 +71,14 @@ export function DatabaseAlert() {
         <div className="border-b border-slate-200 bg-slate-50/95" role="status">
           <div className="mx-auto max-w-6xl px-4 py-1.5 text-xs leading-snug text-slate-700 sm:text-[13px]">
             {isDevelopment ? (
-              <div className="flex flex-col gap-2 rounded-md border border-slate-200/80 bg-white/90 px-3 py-2 shadow-sm">
+              <div className="flex flex-col gap-2 rounded-md border border-slate-200/80 bg-surface/90 px-3 py-2 shadow-sm">
                 <p>
                   <span className="font-medium text-slate-800">Demo mode:</span> AI chat uses sample responses for
                   preview.{" "}
                   <button
                     type="button"
                     onClick={() => setDevDetailsOpen((v) => !v)}
-                    className="font-semibold text-teal-800 underline decoration-teal-800/30 underline-offset-2 hover:text-teal-950"
+                    className="font-semibold text-[color:var(--btn-secondary)] underline decoration-blue-800/30 underline-offset-2 hover:text-[color:var(--btn-secondary-hover)]"
                   >
                     {devDetailsOpen ? "Hide developer details" : "Developer details"}
                   </button>
@@ -90,7 +90,7 @@ export function DatabaseAlert() {
                 ) : null}
               </div>
             ) : (
-              <p className="rounded-md border border-slate-200/80 bg-white/90 px-3 py-2 text-center shadow-sm">
+              <p className="rounded-md border border-slate-200/80 bg-surface/90 px-3 py-2 text-center shadow-sm">
                 <span className="font-medium text-slate-800">Demo mode:</span> AI chat uses sample responses for
                 preview. Bookings and admin data still use your database.
               </p>

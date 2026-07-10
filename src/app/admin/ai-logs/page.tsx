@@ -55,14 +55,14 @@ export default function AiLogsPage() {
     <main className="mx-auto max-w-4xl flex-1 px-4 py-8 sm:px-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">Transparency</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-[color:var(--btn-secondary)]">Transparency</p>
           <h1 className="text-2xl font-bold text-slate-900">AI conversation logs</h1>
           <p className="mt-2 text-sm text-slate-600">
             Recent assistant turns from your workspace (sessions that had a logged-in admin/staff member are tied to
             this business).
           </p>
         </div>
-        <Link href="/admin" className="shrink-0 text-sm font-medium text-teal-700 underline underline-offset-2">
+        <Link href="/admin" className="shrink-0 text-sm font-medium text-[color:var(--btn-secondary)] underline underline-offset-2">
           Dashboard
         </Link>
       </div>
@@ -93,7 +93,7 @@ function LogCard({ log }: { log: Log }) {
   const { displayReply, actionLabel, statusLabel } = summarizeAgentLogReply(log.reply);
 
   return (
-    <li className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <li className="rounded-xl border border-slate-200 bg-surface p-4 shadow-sm">
       <p className="text-xs text-slate-500">{new Date(log.createdAt).toLocaleString()}</p>
       {log.customerEmail ? (
         <p className="mt-1 text-xs font-medium text-slate-700">Signed in as {log.customerEmail}</p>
@@ -121,7 +121,7 @@ function LogCard({ log }: { log: Log }) {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="mt-4 text-xs font-semibold text-teal-800 underline underline-offset-2 hover:text-teal-950"
+        className="mt-4 text-xs font-semibold text-[color:var(--btn-secondary)] underline underline-offset-2 hover:text-[color:var(--foreground)]"
       >
         {open ? "Hide technical details" : "View technical details"}
       </button>

@@ -10,7 +10,7 @@ export function SiteFooter({ session }: { session: Session | null }) {
   const showDashboard = !!session?.user;
 
   return (
-    <footer className="mt-auto border-t border-stone-800 bg-stone-950 py-8 text-white">
+    <footer className="mt-auto border-t border-[color:var(--border)] bg-[color:var(--btn-secondary)] py-8 text-white">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 md:flex-row">
         <div className="flex items-center gap-2 font-bold text-white">
           <LogoMark className="h-8 w-8" />

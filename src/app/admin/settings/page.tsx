@@ -262,7 +262,7 @@ export default function AdminSettingsPage() {
 
   return (
     <main className="mx-auto max-w-3xl flex-1 px-4 py-8 sm:px-6">
-      <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">Workspace</p>
+      <p className="text-xs font-semibold uppercase tracking-wide text-[color:var(--btn-secondary)]">Workspace</p>
       <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
       <p className="mt-2 text-sm text-slate-600">
         {isAdmin
@@ -270,14 +270,14 @@ export default function AdminSettingsPage() {
           : "Your weekly availability (overrides inherited business windows when filled)."}
       </p>
       <div className="mt-4 flex gap-4 text-sm">
-        <Link href="/admin" className="font-medium text-teal-700 underline underline-offset-2">
+        <Link href="/admin" className="font-medium text-[color:var(--btn-secondary)] underline underline-offset-2">
           Dashboard
         </Link>
-        <Link href="/staff" className="font-medium text-teal-700 underline underline-offset-2">
+        <Link href="/staff" className="font-medium text-[color:var(--btn-secondary)] underline underline-offset-2">
           Staff workspace
         </Link>
         {isAdmin ? (
-          <Link href="/admin/ai-logs" className="font-medium text-teal-700 underline underline-offset-2">
+          <Link href="/admin/ai-logs" className="font-medium text-[color:var(--btn-secondary)] underline underline-offset-2">
             AI logs
           </Link>
         ) : null}
@@ -288,7 +288,7 @@ export default function AdminSettingsPage() {
       )}
 
       {isAdmin ? (
-        <section className="mt-10 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <section className="mt-10 rounded-2xl border border-slate-200 bg-surface p-5 shadow-sm">
           <h2 className="text-base font-semibold text-slate-900">Business hours</h2>
           <p className="mt-1 text-sm text-slate-500">Rules that define when customers see open slots.</p>
           <form onSubmit={saveBusinessHours} className="mt-4 space-y-3">
@@ -342,10 +342,10 @@ export default function AdminSettingsPage() {
               </div>
             ))}
             <div className="flex gap-3">
-              <button type="button" className="text-sm font-medium text-teal-700" onClick={addBusinessRuleRow}>
+              <button type="button" className="text-sm font-medium text-[color:var(--btn-secondary)]" onClick={addBusinessRuleRow}>
                 Add row
               </button>
-              <button type="submit" className="rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white">
+              <button type="submit" className="pro-btn-primary px-4 py-2 text-sm">
                 Save hours
               </button>
             </div>
@@ -354,7 +354,7 @@ export default function AdminSettingsPage() {
       ) : null}
 
       {(isAdmin || session?.user?.role === "STAFF") && (
-        <section className="mt-10 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <section className="mt-10 rounded-2xl border border-slate-200 bg-surface p-5 shadow-sm">
           <h2 className="text-base font-semibold text-slate-900">Staff weekly availability</h2>
           <p className="mt-1 text-sm text-slate-500">
             If empty, each weekday follows business hours above. Saved rules replace business hours per weekday when
@@ -433,10 +433,10 @@ export default function AdminSettingsPage() {
                 </div>
               ))}
               <div className="flex gap-3">
-                <button type="button" className="text-sm font-medium text-teal-700" onClick={addStaffRuleRow}>
+                <button type="button" className="text-sm font-medium text-[color:var(--btn-secondary)]" onClick={addStaffRuleRow}>
                   Add row
                 </button>
-                <button type="submit" className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white">
+                <button type="submit" className="pro-btn-primary px-4 py-2 text-sm">
                   Save staff hours
                 </button>
               </div>
@@ -449,7 +449,7 @@ export default function AdminSettingsPage() {
 
       {isAdmin ? (
         <>
-          <section className="mt-10 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <section className="mt-10 rounded-2xl border border-slate-200 bg-surface p-5 shadow-sm">
             <h2 className="text-base font-semibold text-slate-900">Services</h2>
             <ul className="mt-3 space-y-2 text-sm">
               {services.map((s) => (
@@ -460,7 +460,7 @@ export default function AdminSettingsPage() {
                   <span className={`font-medium ${s.isActive ? "text-slate-900" : "text-slate-400 line-through"}`}>
                     {s.name} · {s.durationMinutes} min · {(s.priceCents / 100).toFixed(2)} USD
                   </span>
-                  <button type="button" className="text-xs font-medium text-teal-700" onClick={() => toggleService(s)}>
+                  <button type="button" className="text-xs font-medium text-[color:var(--btn-secondary)]" onClick={() => toggleService(s)}>
                     {s.isActive ? "Deactivate" : "Activate"}
                   </button>
                 </li>
@@ -497,13 +497,13 @@ export default function AdminSettingsPage() {
                   className="mt-1 block w-24 rounded-lg border border-slate-300 px-2 py-1.5"
                 />
               </label>
-              <button type="submit" className="rounded-lg bg-teal-700 px-3 py-2 text-sm font-semibold text-white">
+              <button type="submit" className="pro-btn-primary px-3 py-2 text-sm">
                 Add service
               </button>
             </form>
           </section>
 
-          <section className="mt-10 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <section className="mt-10 rounded-2xl border border-slate-200 bg-surface p-5 shadow-sm">
             <h2 className="text-base font-semibold text-slate-900">Add staff login</h2>
             <form onSubmit={createStaff} className="mt-4 grid gap-3 sm:grid-cols-2">
               <label className="text-sm">
@@ -538,14 +538,14 @@ export default function AdminSettingsPage() {
               </label>
               <button
                 type="submit"
-                className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white sm:col-span-2"
+                className="pro-btn-primary px-4 py-2 text-sm sm:col-span-2"
               >
                 Create staff user
               </button>
             </form>
           </section>
 
-          <section className="mt-10 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <section className="mt-10 rounded-2xl border border-slate-200 bg-surface p-5 shadow-sm">
             <h2 className="text-base font-semibold text-slate-900">Business-wide blackout</h2>
             <p className="mt-1 text-sm text-slate-500">Removes overlapping slots from the booking calendar.</p>
             <form onSubmit={submitBizBlock} className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-end">
@@ -593,7 +593,7 @@ export default function AdminSettingsPage() {
             </form>
           </section>
 
-          <section className="mt-10 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <section className="mt-10 rounded-2xl border border-slate-200 bg-surface p-5 shadow-sm">
             <h2 className="text-base font-semibold text-slate-900">Blocked times</h2>
             <ul className="mt-3 space-y-2 text-sm">
               {blocks.map((b) => (
@@ -612,10 +612,10 @@ export default function AdminSettingsPage() {
             </ul>
           </section>
 
-          <section className="mt-10 rounded-2xl border border-teal-200 bg-teal-50/60 p-5 shadow-sm">
+          <section className="mt-10 rounded-2xl border border-blue-200 bg-blue-50/60 p-5 shadow-sm">
             <h2 className="text-base font-semibold text-slate-900">Workspace coverage</h2>
             <p className="mt-1 text-sm text-slate-600">
-              The main <Link className="font-medium text-teal-800 underline-offset-2 hover:underline" href="/admin">admin overview</Link>{" "}
+              The main <Link className="font-medium text-[color:var(--btn-secondary)] underline-offset-2 hover:underline" href="/admin">admin overview</Link>{" "}
               is backed by your database: today, upcoming, cancelled, staff, services, and customers with bookings.
             </p>
             <h3 className="mt-4 text-sm font-semibold text-slate-800">Roadmap — SaaS-grade integrations</h3>
@@ -636,8 +636,8 @@ export default function AdminSettingsPage() {
               </li>
             </ol>
             <p className="mt-3 text-xs text-slate-500">
-              Details and env placeholders: see <code className="rounded bg-white px-1 py-0.5">README.md</code> (
-              <span className="font-medium">Roadmap: SaaS-grade integrations</span>) and <code className="rounded bg-white px-1 py-0.5">.env.example</code>.
+              Details and env placeholders: see <code className="rounded bg-surface px-1 py-0.5">README.md</code> (
+              <span className="font-medium">Roadmap: SaaS-grade integrations</span>) and <code className="rounded bg-surface px-1 py-0.5">.env.example</code>.
             </p>
           </section>
         </>

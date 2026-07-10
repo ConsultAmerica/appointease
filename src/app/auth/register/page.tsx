@@ -211,7 +211,7 @@ export default function RegisterPage() {
         </div>
       ) : null}
 
-      <form onSubmit={onSubmit} className="mt-6 space-y-4 rounded-xl border border-slate-200 bg-white p-6">
+      <form onSubmit={onSubmit} className="mt-6 space-y-4 rounded-xl border border-slate-200 bg-surface p-6">
         <label className="block text-sm font-medium text-slate-700">
           Role
           <select
@@ -314,7 +314,7 @@ export default function RegisterPage() {
         <button
           type="submit"
           disabled={submitting || customerDisabled}
-          className="w-full rounded-lg bg-slate-900 px-4 py-2.5 font-medium text-white disabled:opacity-60"
+          className="w-full pro-btn-primary px-4 py-2.5 disabled:opacity-60"
         >
           {submitting ? "Please wait…" : "Create account"}
         </button>
@@ -334,7 +334,7 @@ export default function RegisterPage() {
       ) : null}
       <p className="mt-4 text-sm text-slate-600">
         Already registered?{" "}
-        <a href="/auth/login" className="font-medium text-teal-700 underline">
+        <a href="/auth/login" className="font-medium text-[color:var(--btn-secondary)] underline">
           Sign in
         </a>
       </p>

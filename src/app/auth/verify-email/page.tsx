@@ -24,7 +24,7 @@ export default function VerifyEmailPage() {
     <main className="mx-auto w-full max-w-md flex-1 px-6 py-10">
       <h1 className="text-2xl font-bold">Verify email</h1>
       <p className="mt-2 text-sm text-slate-600">Confirm your account before signing in.</p>
-      <button onClick={verify} className="mt-6 rounded bg-slate-900 px-4 py-2 text-white" disabled={!token}>
+      <button onClick={verify} className="pro-btn-primary mt-6 px-4 py-2" disabled={!token}>
         Verify account
       </button>
       {!token ? <p className="mt-4 text-sm text-rose-700">Missing token in URL.</p> : null}

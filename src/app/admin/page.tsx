@@ -260,7 +260,7 @@ export default function AdminPage() {
     session?.user?.role === "STAFF" ? "Staff" : session?.user?.role === "ADMIN" ? "Administrator" : "";
 
   return (
-    <main className="mx-auto w-full max-w-6xl flex-1 bg-slate-50/80 px-4 py-8 sm:px-6 md:py-10">
+    <main className="mx-auto w-full max-w-6xl flex-1 bg-background px-4 py-8 sm:px-6 md:py-10">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0">
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 md:text-[1.75rem]">
@@ -294,7 +294,7 @@ export default function AdminPage() {
         <div className="flex shrink-0 flex-wrap gap-2">
           <Link
             href="/book"
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-teal-700 px-5 text-sm font-semibold text-white shadow-md shadow-teal-700/20 transition hover:bg-teal-800"
+            className="pro-btn-primary inline-flex h-11 items-center justify-center gap-2 px-5 text-sm"
           >
             View booking page
           </Link>
@@ -304,7 +304,7 @@ export default function AdminPage() {
               setLoading(true);
               void load();
             }}
-            className="inline-flex h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-medium text-slate-800 shadow-sm hover:bg-slate-50"
+            className="inline-flex h-11 items-center justify-center rounded-xl border border-slate-300 bg-surface px-4 text-sm font-medium text-slate-800 shadow-sm hover:bg-slate-50"
           >
             Refresh
           </button>
@@ -352,13 +352,13 @@ export default function AdminPage() {
       )}
 
       {!loading && firstPendingToday && (
-        <section className="mt-8 rounded-2xl bg-teal-700 p-6 text-white shadow-lg shadow-teal-700/25 md:p-8">
+        <section className="mt-8 rounded-2xl bg-[color:var(--btn-primary)] p-6 text-white shadow-lg shadow-[color:var(--btn-primary-shadow)] md:p-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
-              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-teal-100">Needs your action</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-blue-100">Needs your action</p>
               <h2 className="mt-2 text-xl font-bold md:text-2xl">{firstPendingToday.service.name}</h2>
-              <p className="mt-1 text-sm text-teal-100">{firstPendingToday.customerName}</p>
-              <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-teal-50">
+              <p className="mt-1 text-sm text-blue-100">{firstPendingToday.customerName}</p>
+              <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-blue-50">
                 <span className="inline-flex items-center gap-2">
                   <CalendarMini className="h-4 w-4 opacity-90" />
                   {formatInTimeZone(firstPendingToday.startAt, tz)}
@@ -371,7 +371,7 @@ export default function AdminPage() {
                 createdViaAiChat={Boolean(firstPendingToday.createdViaAiChat)}
               />
               {firstPendingToday.createdViaAiChat ? (
-                <span className="max-w-[14rem] text-right text-[11px] font-medium text-teal-100/95">
+                <span className="max-w-[14rem] text-right text-[11px] font-medium text-blue-100/95">
                   Pending confirmation · from AI assistant
                 </span>
               ) : null}
@@ -381,7 +381,7 @@ export default function AdminPage() {
       )}
 
       {overview && (
-        <section className="mt-8 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm ring-1 ring-slate-100/80 md:p-6">
+        <section className="mt-8 rounded-2xl border border-slate-200/90 bg-surface p-5 shadow-sm ring-1 ring-slate-100/80 md:p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-base font-semibold text-slate-900">Workspace overview</h2>
             <div className="flex flex-wrap gap-2 text-xs">
@@ -489,20 +489,20 @@ export default function AdminPage() {
           label="Total bookings"
           value={stats.totalBookings}
           valueClassName="text-slate-900"
-          icon={<CalendarIcon className="h-5 w-5 text-teal-700" />}
-          iconBg="bg-teal-50"
+          icon={<CalendarIcon className="h-5 w-5 text-[color:var(--btn-secondary)]" />}
+          iconBg="bg-blue-50"
         />
         <StatCard
           label="Upcoming"
           value={stats.upcoming}
-          valueClassName="text-amber-700"
+          valueClassName="text-[color:var(--warning)]"
           icon={<ClockIcon className="h-5 w-5 text-amber-600" />}
           iconBg="bg-amber-50"
         />
         <StatCard
           label="Confirmed"
           value={stats.confirmed}
-          valueClassName="text-emerald-700"
+          valueClassName="text-[color:var(--success)]"
           icon={<CheckIcon className="h-5 w-5 text-emerald-600" />}
           iconBg="bg-emerald-50"
         />
@@ -523,7 +523,7 @@ export default function AdminPage() {
       </section>
 
       <section className="mt-8 grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm ring-1 ring-slate-100/80 md:p-6">
+        <div className="rounded-2xl border border-slate-200/90 bg-surface p-5 shadow-sm ring-1 ring-slate-100/80 md:p-6">
           <h2 className="text-base font-semibold text-slate-900">Today&apos;s schedule</h2>
           <p className="mt-1 text-sm text-slate-500">
             Times shown in <span className="font-mono text-xs text-slate-700">{tz}</span>. Pending requests can be
@@ -535,7 +535,7 @@ export default function AdminPage() {
                 <p className="font-medium text-slate-800">No appointments today</p>
                 <p className="mt-2 text-sm text-slate-600">
                   When customers book for today, they will appear here. Share your{" "}
-                  <Link href="/book" className="font-medium text-teal-700 underline hover:text-teal-800">
+                  <Link href="/book" className="font-medium text-[color:var(--btn-secondary)] underline hover:text-[color:var(--btn-secondary)]">
                     public booking page
                   </Link>
                   .
@@ -545,7 +545,7 @@ export default function AdminPage() {
             {appointments.map((appointment) => (
               <li
                 key={appointment.id}
-                className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm ring-1 ring-slate-100/80"
+                className="rounded-xl border border-slate-100 bg-surface p-4 shadow-sm ring-1 ring-slate-100/80"
               >
                 <div className="flex gap-3">
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-emerald-500 text-base font-bold text-white shadow-inner">
@@ -592,7 +592,7 @@ export default function AdminPage() {
                             type="button"
                             disabled={busyId === appointment.id}
                             onClick={() => updateAppointmentStatus(appointment.id, "CONFIRMED")}
-                            className="rounded-lg bg-emerald-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-800 disabled:opacity-50"
+                            className="rounded-lg bg-[color:var(--success)] px-3 py-1.5 text-xs font-medium text-white hover:opacity-90 disabled:opacity-50"
                           >
                             Confirm
                           </button>
@@ -600,7 +600,7 @@ export default function AdminPage() {
                             type="button"
                             disabled={busyId === appointment.id}
                             onClick={() => updateAppointmentStatus(appointment.id, "CANCELLED")}
-                            className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium hover:bg-slate-50 disabled:opacity-50"
+                            className="rounded-lg border border-slate-300 bg-surface px-3 py-1.5 text-xs font-medium hover:bg-slate-50 disabled:opacity-50"
                           >
                             Decline
                           </button>
@@ -624,7 +624,7 @@ export default function AdminPage() {
           </ul>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm ring-1 ring-slate-100/80 md:p-6">
+        <div className="rounded-2xl border border-slate-200/90 bg-surface p-5 shadow-sm ring-1 ring-slate-100/80 md:p-6">
           <h2 className="text-base font-semibold text-slate-900">Last 7 days</h2>
           <p className="mt-1 text-sm text-slate-600">
             Booking volume by day. No-show rate (cancelled as proxy):{" "}
@@ -663,7 +663,7 @@ function StatCard({
   iconBg: string;
 }) {
   return (
-    <article className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm ring-1 ring-slate-100/80">
+    <article className="rounded-2xl border border-slate-200/90 bg-surface p-5 shadow-sm ring-1 ring-slate-100/80">
       <div className={`inline-flex rounded-xl p-2.5 ${iconBg}`}>{icon}</div>
       <p className={`mt-4 text-3xl font-bold tabular-nums ${valueClassName}`}>{value}</p>
       <p className="text-sm font-medium text-slate-500">{label}</p>
@@ -736,7 +736,7 @@ function AdminPulseCard({
           ? "border-l-emerald-500"
           : "border-l-slate-400";
   return (
-    <article className={`rounded-2xl border border-slate-200 border-l-4 bg-white p-4 shadow-sm ${border}`}>
+    <article className={`rounded-2xl border border-slate-200 border-l-4 bg-surface p-4 shadow-sm ${border}`}>
       <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
       <p className="mt-2 text-2xl font-bold text-slate-900">{value}</p>
       <p className="mt-1 text-xs text-slate-500">{hint}</p>

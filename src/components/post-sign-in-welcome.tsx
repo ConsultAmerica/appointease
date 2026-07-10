@@ -31,11 +31,11 @@ export function PostSignInWelcome() {
   if (!text) return null;
 
   return (
-    <div className="border-b border-teal-200 bg-teal-50 px-4 py-3 text-center text-sm text-teal-950">
+    <div className="border-b border-blue-200 bg-blue-50 px-4 py-3 text-center text-sm text-[color:var(--foreground)]">
       <span>{text}</span>
       <button
         type="button"
-        className="ml-3 font-medium text-teal-800 underline underline-offset-2 hover:text-teal-900"
+        className="ml-3 font-medium text-[color:var(--btn-secondary)] underline underline-offset-2 hover:text-[color:var(--btn-secondary)]"
         onClick={() => setText(null)}
       >
         Dismiss

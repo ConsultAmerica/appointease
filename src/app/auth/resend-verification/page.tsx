@@ -26,7 +26,7 @@ export default function ResendVerificationPage() {
     <main className="mx-auto w-full max-w-md flex-1 px-6 py-10">
       <h1 className="text-2xl font-bold">Resend verification email</h1>
       <p className="mt-2 text-sm text-slate-600">Use the same email you registered with.</p>
-      <form onSubmit={onSubmit} className="mt-6 space-y-4 rounded-xl border border-slate-200 bg-white p-6">
+      <form onSubmit={onSubmit} className="mt-6 space-y-4 rounded-xl border border-slate-200 bg-surface p-6">
         <label className="block text-sm">
           Email
           <input
@@ -37,7 +37,7 @@ export default function ResendVerificationPage() {
             className="mt-1 w-full rounded border border-slate-300 px-3 py-2"
           />
         </label>
-        <button className="rounded bg-slate-900 px-4 py-2 text-white">Send verification email</button>
+        <button className="pro-btn-primary px-4 py-2">Send verification email</button>
       </form>
       {status ? <p className="mt-4 rounded bg-slate-100 p-3 text-sm">{status}</p> : null}
       <p className="mt-4 text-sm">

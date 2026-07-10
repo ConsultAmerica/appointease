@@ -1,17 +1,35 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --health-trust: #2563eb;
-  --health-available: #059669;
-  --health-limited: #d97706;
-  --health-neutral: #f1f5f9;
+  --background: #f9fafb;
+  --background-subtle: #f3f4f6;
+  --foreground: #111827;
+  --surface: #ffffff;
+  --surface-muted: #f3f4f6;
+  --border: #e5e7eb;
+  --btn-primary: #2563eb;
+  --btn-primary-hover: #1d4ed8;
+  --btn-primary-shadow: rgb(37 99 235 / 0.25);
+  --btn-secondary: #1e40af;
+  --btn-secondary-hover: #1e3a8a;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --brand-primary: #1e40af;
+  --brand-accent: #2563eb;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-background-subtle: var(--background-subtle);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
   --color-foreground: var(--foreground);
+  --color-btn-primary: var(--btn-primary);
+  --color-btn-secondary: var(--btn-secondary);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -19,4 +37,73 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+input,
+textarea,
+select {
+  background-color: var(--surface);
+  color: var(--foreground);
+}
+
+.pro-card {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgb(17 24 39 / 0.04);
+}
+
+.pro-btn-primary {
+  border-radius: 0.5rem;
+  background: var(--btn-primary);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 1px 3px var(--btn-primary-shadow);
+  transition: background 0.15s ease;
+}
+
+.pro-btn-primary:hover {
+  background: var(--btn-primary-hover);
+}
+
+.pro-btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.pro-btn-secondary {
+  border-radius: 0.5rem;
+  background: var(--btn-secondary);
+  color: white;
+  font-weight: 600;
+  transition: background 0.15s ease;
+}
+
+.pro-btn-secondary:hover {
+  background: var(--btn-secondary-hover);
+}
+
+.pro-btn-secondary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.pro-link {
+  color: var(--btn-secondary);
+  font-weight: 500;
+}
+
+.pro-link:hover {
+  color: var(--btn-secondary-hover);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.pro-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--btn-secondary);
 }

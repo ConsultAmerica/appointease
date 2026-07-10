@@ -30,21 +30,21 @@ export function BookCalendar({
   while (cells.length % 7 !== 0) cells.push({ day: 0, inMonth: false });
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <div className="rounded-lg border border-slate-200 bg-surface p-4">
       <div className="mb-4 flex items-center justify-between gap-2">
         <button
           type="button"
           onClick={() => setViewMonth(new Date(year, monthIndex - 1, 1))}
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50"
+          className="flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50"
           aria-label="Previous month"
         >
           ‹
         </button>
-        <h3 className="text-base font-semibold text-slate-900">{monthLabel}</h3>
+        <h3 className="text-sm font-semibold text-slate-900">{monthLabel}</h3>
         <button
           type="button"
           onClick={() => setViewMonth(new Date(year, monthIndex + 1, 1))}
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50"
+          className="flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50"
           aria-label="Next month"
         >
           ›
@@ -52,13 +52,13 @@ export function BookCalendar({
       </div>
       <div className="grid grid-cols-7 gap-1 text-center">
         {WEEKDAY_LABELS.map((w) => (
-          <div key={w} className="pb-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+          <div key={w} className="pb-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
             {w}
           </div>
         ))}
         {cells.map((cell, idx) => {
           if (!cell.inMonth || cell.day === 0) {
-            return <div key={`e-${idx}`} className="aspect-square min-h-10" />;
+            return <div key={`e-${idx}`} className="aspect-square min-h-9" />;
           }
           const iso = localISODate(new Date(year, monthIndex, cell.day));
           const isSelected = value === iso;
@@ -69,12 +69,12 @@ export function BookCalendar({
               type="button"
               disabled={isPast}
               onClick={() => onChange(iso)}
-              className={`aspect-square min-h-10 rounded-xl text-sm font-medium transition ${
+              className={`aspect-square min-h-9 rounded-md text-sm font-medium transition ${
                 isPast
-                  ? "cursor-not-allowed bg-slate-100 text-slate-300"
+                  ? "cursor-not-allowed text-slate-300"
                   : isSelected
-                    ? "bg-blue-600 font-semibold text-white shadow-md"
-                    : "text-slate-800 hover:bg-blue-50"
+                    ? "bg-[color:var(--btn-primary)] font-semibold text-white"
+                    : "text-slate-700 hover:bg-slate-100"
               }`}
             >
               {cell.day}

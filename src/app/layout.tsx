@@ -29,7 +29,7 @@ export default async function RootLayout({
       lang="en"
       className={`${inter.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-slate-50 font-sans text-slate-900">
+      <body className="flex min-h-full flex-col bg-background font-sans text-foreground">
         <Providers session={session}>
           <SiteHeader session={session} />
           <DatabaseAlert />

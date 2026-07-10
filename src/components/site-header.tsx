@@ -16,16 +16,12 @@ export function SiteHeader({ session }: { session: Session | null }) {
 
   return (
     <header
-      className={
-        isHome
-          ? "sticky top-0 z-50 border-b border-stone-200/80 bg-stone-50/85 text-stone-900 backdrop-blur-md"
-          : "border-b border-slate-200 bg-white text-slate-900"
-      }
+      className="sticky top-0 z-50 border-b border-[color:var(--border)] bg-background/90 text-slate-900 shadow-sm backdrop-blur-md"
     >
       <nav className="relative mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2.5 font-bold tracking-tight">
           <LogoMark variant="default" className="h-9 w-9 shrink-0" />
-          <span className={isHome ? "text-stone-900" : "text-slate-900"}>{PRODUCT}</span>
+          <span className="text-slate-900">{PRODUCT}</span>
         </Link>
 
         <div className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-6 text-sm font-medium md:flex">
@@ -64,13 +60,9 @@ function NavLink({
   active: boolean;
   children: ReactNode;
 }) {
-  const base = isHome
-    ? active
-      ? "font-semibold text-violet-700"
-      : "text-stone-600 hover:text-stone-900"
-    : active
-      ? "font-semibold text-teal-700"
-      : "text-slate-600 hover:text-slate-900";
+  const base = active
+    ? "font-semibold text-slate-900"
+    : "text-slate-600 hover:text-slate-900";
   return (
     <Link href={href} className={base}>
       {children}
@@ -124,8 +116,8 @@ function ProfileDropdown({
   }, [open]);
 
   const panel = isHome
-    ? "border-slate-200 bg-white text-slate-900 shadow-xl ring-1 ring-slate-200/80"
-    : "border-slate-200 bg-white text-slate-900 shadow-xl ring-1 ring-slate-200/80";
+    ? "border-slate-200 bg-surface text-slate-900 shadow-xl ring-1 ring-slate-200/80"
+    : "border-slate-200 bg-surface text-slate-900 shadow-xl ring-1 ring-slate-200/80";
 
   return (
     <div className="relative mr-1" ref={rootRef}>
@@ -136,7 +128,7 @@ function ProfileDropdown({
         aria-haspopup="menu"
         aria-controls={`${menuId}-menu`}
         onClick={() => setOpen((v) => !v)}
-        className="rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+        className="rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--btn-primary)]"
       >
         {renderTrigger(open)}
       </button>
@@ -173,7 +165,7 @@ function ProfileMenuTrigger({
   return (
     <span
       className={`flex cursor-pointer items-center gap-1 rounded-full border py-1 pl-1 pr-2 transition sm:pr-3 ${
-        isHome ? "border-stone-200 bg-white hover:bg-stone-50" : "border-slate-200 bg-slate-50 hover:bg-slate-100"
+        isHome ? "border-stone-200 bg-surface hover:bg-stone-50" : "border-slate-200 bg-slate-50 hover:bg-slate-100"
       }`}
     >
       <span
@@ -223,7 +215,7 @@ function AdminStaffUserMenu({
           initial={initial}
           displayName={displayName}
           subtitle={roleLabel}
-          avatarClass={isHome ? "bg-violet-600" : "bg-slate-800"}
+          avatarClass="bg-slate-800"
         />
       )}
     >
@@ -291,7 +283,7 @@ function CustomerUserMenu({
           initial={initial}
           displayName={displayName}
           subtitle="Member"
-          avatarClass={isHome ? "bg-violet-600" : "bg-teal-700"}
+          avatarClass="bg-slate-800"
         />
       )}
     >
@@ -321,7 +313,7 @@ function CustomerUserMenu({
 }
 
 function HeaderAuth({ session, isHome }: { session: Session | null; isHome: boolean }) {
-  const linkMuted = isHome ? "text-stone-600 hover:text-stone-900" : "text-slate-600 hover:text-slate-900";
+  const linkMuted = "text-slate-600 hover:text-slate-900";
 
   if (!session?.user) {
     return (
@@ -331,11 +323,7 @@ function HeaderAuth({ session, isHome }: { session: Session | null; isHome: bool
         </a>
         <a
           href="/auth/register"
-          className={
-            isHome
-              ? "rounded-full bg-violet-600 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-violet-700"
-              : "rounded-full bg-teal-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-teal-800"
-          }
+          className="pro-btn-primary px-4 py-2 text-sm"
         >
           Get Started
         </a>
