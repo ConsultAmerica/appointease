@@ -1,5 +1,6 @@
 import { startOfDay } from "date-fns";
 import { NextResponse } from "next/server";
+import { slotStatusForDay } from "@/lib/clinic-theme";
 import { getSlotsForDay } from "@/lib/slots-for-day";
 import { toDisplayTime } from "@/lib/time";
 
@@ -30,9 +31,10 @@ export async function GET(req: Request, context: Context) {
 
   return NextResponse.json({
     closedDay: result.closedDay,
-    slots: result.slots.map((slot) => ({
+    slots: result.slots.map((slot, index) => ({
       iso: slot.toISOString(),
       label: toDisplayTime(slot),
+      status: slotStatusForDay(result.slots.length, index),
     })),
   });
 }

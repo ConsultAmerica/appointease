@@ -332,6 +332,25 @@ export default function AdminPage() {
         </p>
       )}
 
+      {!loading && (
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <AdminPulseCard label="Today's appointments" value={String(appointments.length)} hint="On today's calendar" tone="blue" />
+          <AdminPulseCard label="Pending review" value={String(pendingToday)} hint="Need confirmation" tone="amber" />
+          <AdminPulseCard
+            label="Providers available"
+            value={String(overview?.staff.length ?? 0)}
+            hint="Staff on roster"
+            tone="emerald"
+          />
+          <AdminPulseCard
+            label="No-show rate"
+            value={`${Math.round(noShowRate * 100)}%`}
+            hint="Last 30 days"
+            tone="slate"
+          />
+        </div>
+      )}
+
       {!loading && firstPendingToday && (
         <section className="mt-8 rounded-2xl bg-teal-700 p-6 text-white shadow-lg shadow-teal-700/25 md:p-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -694,5 +713,33 @@ function CalendarMini({ className }: { className?: string }) {
       <rect x="3" y="4" width="18" height="18" rx="2" />
       <path d="M16 2v4M8 2v4M3 10h18" />
     </svg>
+  );
+}
+
+function AdminPulseCard({
+  label,
+  value,
+  hint,
+  tone,
+}: {
+  label: string;
+  value: string;
+  hint: string;
+  tone: "blue" | "amber" | "emerald" | "slate";
+}) {
+  const border =
+    tone === "blue"
+      ? "border-l-blue-500"
+      : tone === "amber"
+        ? "border-l-amber-500"
+        : tone === "emerald"
+          ? "border-l-emerald-500"
+          : "border-l-slate-400";
+  return (
+    <article className={`rounded-2xl border border-slate-200 border-l-4 bg-white p-4 shadow-sm ${border}`}>
+      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
+      <p className="mt-2 text-2xl font-bold text-slate-900">{value}</p>
+      <p className="mt-1 text-xs text-slate-500">{hint}</p>
+    </article>
   );
 }

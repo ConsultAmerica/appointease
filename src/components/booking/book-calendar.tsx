@@ -1,0 +1,87 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { localISODate } from "@/components/booking/types";
+
+const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
+
+export function BookCalendar({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (iso: string) => void;
+}) {
+  const [viewMonth, setViewMonth] = useState(() => {
+    const [y, m] = value.split("-").map(Number);
+    return new Date(y, m - 1, 1);
+  });
+
+  const todayIso = useMemo(() => localISODate(new Date()), []);
+  const year = viewMonth.getFullYear();
+  const monthIndex = viewMonth.getMonth();
+  const monthLabel = viewMonth.toLocaleString(undefined, { month: "long", year: "numeric" });
+  const firstDow = new Date(year, monthIndex, 1).getDay();
+  const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+
+  const cells: { day: number; inMonth: boolean }[] = [];
+  for (let i = 0; i < firstDow; i++) cells.push({ day: 0, inMonth: false });
+  for (let d = 1; d <= daysInMonth; d++) cells.push({ day: d, inMonth: true });
+  while (cells.length % 7 !== 0) cells.push({ day: 0, inMonth: false });
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+      <div className="mb-4 flex items-center justify-between gap-2">
+        <button
+          type="button"
+          onClick={() => setViewMonth(new Date(year, monthIndex - 1, 1))}
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50"
+          aria-label="Previous month"
+        >
+          ‹
+        </button>
+        <h3 className="text-base font-semibold text-slate-900">{monthLabel}</h3>
+        <button
+          type="button"
+          onClick={() => setViewMonth(new Date(year, monthIndex + 1, 1))}
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50"
+          aria-label="Next month"
+        >
+          ›
+        </button>
+      </div>
+      <div className="grid grid-cols-7 gap-1 text-center">
+        {WEEKDAY_LABELS.map((w) => (
+          <div key={w} className="pb-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+            {w}
+          </div>
+        ))}
+        {cells.map((cell, idx) => {
+          if (!cell.inMonth || cell.day === 0) {
+            return <div key={`e-${idx}`} className="aspect-square min-h-10" />;
+          }
+          const iso = localISODate(new Date(year, monthIndex, cell.day));
+          const isSelected = value === iso;
+          const isPast = iso < todayIso;
+          return (
+            <button
+              key={iso}
+              type="button"
+              disabled={isPast}
+              onClick={() => onChange(iso)}
+              className={`aspect-square min-h-10 rounded-xl text-sm font-medium transition ${
+                isPast
+                  ? "cursor-not-allowed bg-slate-100 text-slate-300"
+                  : isSelected
+                    ? "bg-blue-600 font-semibold text-white shadow-md"
+                    : "text-slate-800 hover:bg-blue-50"
+              }`}
+            >
+              {cell.day}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

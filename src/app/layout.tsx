@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import { DatabaseAlert } from "@/components/database-alert";
 import { PostSignInWelcome } from "@/components/post-sign-in-welcome";
 import { Providers } from "@/components/providers";
@@ -8,13 +8,8 @@ import { SiteHeader } from "@/components/site-header";
 import { auth } from "@/auth";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
@@ -32,9 +27,9 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-slate-50 text-slate-900">
+      <body className="flex min-h-full flex-col bg-slate-50 font-sans text-slate-900">
         <Providers session={session}>
           <SiteHeader session={session} />
           <DatabaseAlert />

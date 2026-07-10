@@ -1,6 +1,7 @@
 import type { Session } from "next-auth";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { enrichBusinessesForBooking } from "@/lib/enrich-business-booking";
 import { describeDatabaseLoadFailure } from "@/lib/prisma-errors";
 import { prisma } from "@/lib/prisma";
 import { withTimeout } from "@/lib/with-timeout";
@@ -20,7 +21,7 @@ export async function GET() {
   }
 
   try {
-    const businesses = await withTimeout(
+    const businessesRaw = await withTimeout(
       prisma.business.findMany({
         include: {
           services: {
@@ -34,6 +35,8 @@ export async function GET() {
       DB_QUERY_MS,
       "DATABASE_QUERY_TIMEOUT",
     );
+
+    const businesses = await enrichBusinessesForBooking(businessesRaw);
 
     /** Exact clinic for the signed-in user (avoids wrong `list[0]` when find misses the first page). */
     let myBusiness: { id: string; name: string } | null = null;

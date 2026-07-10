@@ -12,7 +12,13 @@ function isPublicRoute(pathname: string, method: string): boolean {
   if (pathname === "/book" || pathname.startsWith("/book/")) return true;
   if (pathname === "/api/bookings" && method === "POST") return true;
   if (pathname === "/api/businesses" && method === "GET") return true;
-  if (pathname.startsWith("/api/businesses/") && pathname.endsWith("/availability") && method === "GET") {
+  if (
+    pathname.startsWith("/api/businesses/") &&
+    method === "GET" &&
+    (pathname.endsWith("/availability") ||
+      pathname.endsWith("/providers") ||
+      pathname.endsWith("/suggest"))
+  ) {
     return true;
   }
   if (pathname === "/api/health") return true;
@@ -72,5 +78,7 @@ export const config = {
     "/api/bookings",
     "/api/businesses",
     "/api/businesses/:businessId/availability",
+    "/api/businesses/:businessId/providers",
+    "/api/businesses/:businessId/suggest",
   ],
 };
