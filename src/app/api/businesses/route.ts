@@ -30,7 +30,7 @@ export async function GET() {
           },
         },
         orderBy: { createdAt: "desc" },
-        take: 20,
+        take: 50,
       }),
       DB_QUERY_MS,
       "DATABASE_QUERY_TIMEOUT",

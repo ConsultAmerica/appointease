@@ -57,7 +57,8 @@ function normalizeClinics(raw: unknown): Clinic[] {
         serviceCount: typeof b.serviceCount === "number" ? b.serviceCount : services.length,
       };
     })
-    .filter((c): c is Clinic => c !== null);
+    .filter((c): c is Clinic => c !== null)
+    .filter((c, i, arr) => arr.findIndex((x) => x.id === c.id) === i);
 }
 
 export function BookingWizard() {
